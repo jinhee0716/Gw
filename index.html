@@ -1,0 +1,858 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GATEWORK · 헌터 채용 플랫폼</title>
+<style>
+:root{
+  --bg:#101215; --bg2:#14171b; --panel:#1a1e23; --panel2:#222730; --line:#2c323a; --line2:#3b424c;
+  --text:#edf0f2; --sub:#a3adb8; --mute:#707b87;
+  --mint:#35f2c2; --mint-d:#14b88e; --mint-bg:rgba(53,242,194,.09);
+  --gold:#ead6a6; --gold-d:#c9a45c; --gold-bg:rgba(234,214,166,.09);
+  --warn:#ffb347; --warn-bg:rgba(255,179,71,.1); --danger:#ff6b6b; --danger-bg:rgba(255,107,107,.1); --blue:#8fb4ff;
+  --font:"Pretendard Variable","Pretendard","Noto Sans KR","Noto Sans CJK KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.55 var(--font);font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;cursor:pointer}
+h1,h2,h3,h4,p{margin:0}
+:focus-visible{outline:2px solid var(--mint);outline-offset:2px;border-radius:4px}
+.skip{position:absolute;left:-999px;top:8px;background:var(--mint);color:#04120e;padding:8px 12px;z-index:100;border-radius:4px}
+.skip:focus{left:8px}
+.wrap{max-width:1320px;margin:0 auto;padding:0 28px}
+.ic{flex:none;vertical-align:middle}
+.sub{color:var(--sub)} .mute{color:var(--mute)} .sm{font-size:12px}
+
+/* header */
+#gh{position:sticky;top:0;z-index:50;background:rgba(16,18,21,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+#gh .wrap{display:flex;align-items:center;height:60px;gap:36px}
+.logo{display:flex;align-items:center;gap:9px;font-weight:800;font-size:19px;letter-spacing:.06em}
+.logo b{color:var(--mint);font-weight:800}
+.nav{display:flex;gap:2px;flex:1;overflow-x:auto;scrollbar-width:none}
+.nav a{position:relative;padding:20px 12px;font-size:14px;color:var(--sub);white-space:nowrap}
+.nav a:hover{color:var(--text)}
+.nav a.on{color:var(--text);font-weight:600}
+.nav a.on::after{content:"";position:absolute;left:12px;right:12px;bottom:0;height:3px;background:var(--mint);border-radius:3px 3px 0 0}
+.hr{display:flex;align-items:center;gap:6px}
+.ib{position:relative;width:38px;height:38px;display:grid;place-items:center;background:none;border:0;border-radius:8px;color:var(--sub)}
+.ib:hover{background:var(--panel);color:var(--text)}
+.ib .dot{position:absolute;top:7px;right:7px;min-width:8px;height:8px;border-radius:8px;background:var(--mint)}
+.ib .cnt{position:absolute;top:3px;right:1px;background:var(--mint);color:#04120e;font-size:10px;font-weight:700;border-radius:8px;padding:0 5px;line-height:15px}
+.me{display:flex;align-items:center;gap:9px;margin-left:8px;padding:4px 10px 4px 4px;border:1px solid var(--line);border-radius:30px;background:var(--panel);cursor:pointer}
+.me i{width:28px;height:28px;border-radius:50%;background:var(--panel2);display:grid;place-items:center;font-style:normal;font-weight:700;font-size:12px;color:var(--mint)}
+.me span{font-size:12.5px;line-height:1.2} .me small{display:block;color:var(--mute);font-size:11px}
+
+/* ticker */
+#ticker{background:var(--bg2);border-bottom:1px solid var(--line)}
+#ticker .wrap{display:flex;align-items:center;gap:16px;height:42px;font-size:12.5px;overflow-x:auto;scrollbar-width:none;white-space:nowrap}
+.tk-l{color:var(--sub);display:flex;gap:8px;align-items:center}
+.tk{display:flex;gap:7px;align-items:baseline}
+.tk b{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:4px;background:var(--panel2);font-size:11px}
+.tk em{font-style:normal;font-size:11px}
+.up{color:var(--mint)} .dn{color:var(--danger)}
+.tk-sep{width:1px;height:18px;background:var(--line);flex:none}
+.tk-r{margin-left:auto;display:flex;gap:14px;align-items:center}
+.live{display:inline-flex;gap:6px;align-items:center}
+.live::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--mint)}
+.live.warn::before{background:var(--warn)}
+
+/* generic */
+.crumb{display:flex;gap:8px;align-items:center;padding:16px 0 10px;color:var(--mute);font-size:12.5px}
+.crumb a:hover{color:var(--text)} .crumb .cur{color:var(--sub)}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 308px;gap:24px;align-items:start}
+.col{display:grid;gap:18px;min-width:0}
+.sec{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px 22px}
+.sec>h2,.hd{font-size:16.5px;font-weight:700;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.sec>h2 small,.hd small{font-weight:400;color:var(--mute);font-size:12px}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:4px;font-size:11.5px;font-weight:600;background:var(--panel2);color:var(--sub);border:1px solid var(--line);white-space:nowrap}
+.badge.mint{background:var(--mint-bg);color:var(--mint);border-color:rgba(53,242,194,.28)}
+.badge.warn{background:var(--warn-bg);color:var(--warn);border-color:rgba(255,179,71,.3)}
+.badge.red{background:var(--danger-bg);color:var(--danger);border-color:rgba(255,107,107,.3)}
+.badge.gold{background:var(--gold-bg);color:var(--gold);border-color:rgba(234,214,166,.3)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:40px;padding:0 18px;border-radius:7px;border:1px solid var(--line2);background:var(--panel2);font-weight:600;font-size:13.5px}
+.btn:hover{border-color:var(--sub)}
+.btn.pri{background:var(--mint);border-color:var(--mint);color:#04120e}
+.btn.pri:hover{background:#6bf7d5}
+.btn.gold{background:var(--gold);border-color:var(--gold);color:#241b08}
+.btn.gold:hover{background:#f3e3bb}
+.btn.sm{height:32px;padding:0 12px;font-size:12.5px}
+.chip{height:32px;padding:0 13px;border-radius:30px;border:1px solid var(--line2);background:transparent;color:var(--sub);font-size:13px}
+.chip:hover{color:var(--text);border-color:var(--sub)}
+.chip[aria-pressed=true]{background:var(--mint-bg);border-color:var(--mint);color:var(--mint)}
+input,select{height:42px;background:var(--bg);border:1px solid var(--line2);border-radius:7px;color:var(--text);font:inherit;padding:0 12px;min-width:0}
+input::placeholder{color:var(--mute)}
+select{padding-right:6px}
+label.f{display:grid;gap:5px;font-size:12px;color:var(--sub)}
+
+/* hero (home) */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) 392px;gap:20px;padding:22px 0 8px}
+.hero-main{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:28px 30px}
+.hero-main h1{font-size:28px;line-height:1.3;font-weight:800;letter-spacing:-.01em}
+.hero-main>p{margin-top:8px;color:var(--sub)}
+.sform{display:grid;grid-template-columns:minmax(0,1.5fr) 130px 130px 104px;gap:10px;margin-top:20px}
+.sform .go{grid-column:auto}
+.matcher{margin-top:14px;display:flex;gap:14px;align-items:center;border:1px dashed var(--line2);border-radius:9px;padding:12px 14px;background:var(--bg)}
+.matcher label{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--sub);white-space:nowrap}
+.matcher input{width:78px;height:36px;text-align:center;font-weight:700;color:var(--mint)}
+#mres{font-size:13px;line-height:1.5}
+#mres b{color:var(--mint)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.banner{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:14px}
+.banner h2{font-size:18px;line-height:1.4}
+.phase{display:grid;grid-template-columns:6fr 18fr 6fr;gap:4px;margin-top:4px}
+.phase div{height:8px;background:var(--panel2);border-radius:2px;position:relative}
+.phase div.cur{background:var(--mint)}
+.phase div.done{background:var(--mint-d);opacity:.55}
+.phase-l{display:grid;grid-template-columns:6fr 18fr 6fr;gap:4px;font-size:11.5px;color:var(--mute)}
+.phase-l span.cur{color:var(--mint);font-weight:600}
+
+/* job cards */
+.jobs{display:grid;gap:12px}
+[data-tab=home] .jobs.v2{grid-template-columns:1fr 1fr}
+[data-tab=home] .jobs.v2 .job:last-child{grid-column:1/-1}
+.job{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 20px 16px 20px}
+.job:hover{border-color:var(--line2)}
+.job.sus{border-color:rgba(255,179,71,.45);background:linear-gradient(180deg,var(--warn-bg),var(--panel) 60%)}
+.job-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12.5px;color:var(--sub)}
+.job-top .org{font-weight:700;color:var(--text);font-size:13.5px}
+.job h3{font-size:17px;margin:8px 0 5px;font-weight:700;padding-right:44px}
+.job p.d{color:var(--sub);font-size:13.5px}
+.job-meta{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:11px;font-size:12.5px;color:var(--sub)}
+.job-meta b{color:var(--text);font-weight:600}
+.job-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.job-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+.scrap{position:absolute;right:14px;top:14px;width:34px;height:34px;border-radius:8px;border:1px solid var(--line);background:var(--bg);display:grid;place-items:center;color:var(--mute)}
+.scrap[aria-pressed=true]{color:var(--mint);border-color:var(--mint)}
+.scrap[aria-pressed=true] svg{fill:var(--mint)}
+.job .more{display:none;margin-top:12px;font-size:13px;color:var(--sub);background:var(--bg);border-radius:8px;padding:12px 14px}
+.job .more.open{display:block}
+.job .more li{margin:3px 0}
+.job .more ul{margin:0;padding-left:18px}
+.warnline{display:flex;gap:8px;align-items:flex-start;margin-top:12px;font-size:12.5px;color:var(--warn)}
+.empty{padding:36px;text-align:center;color:var(--sub);border:1px dashed var(--line2);border-radius:10px}
+.listhd{display:flex;align-items:center;justify-content:space-between;margin:6px 0 12px}
+.listhd h2{font-size:18px}
+
+/* side widgets */
+.side{display:grid;gap:16px;position:sticky;top:76px}
+.w{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.w h3{font-size:14.5px;display:flex;justify-content:space-between;align-items:center;margin-bottom:11px}
+.w h3 small{font-weight:400;color:var(--mute);font-size:11.5px}
+.w ul{list-style:none;margin:0;padding:0;display:grid;gap:11px}
+.wi{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;font-size:13px}
+.wi small{display:block;color:var(--mute);font-size:11.5px}
+.gr{display:inline-grid;place-items:center;min-width:26px;height:24px;padding:0 5px;border-radius:5px;background:var(--panel2);font-weight:700;font-size:12px}
+.gr.E{color:#9bd1ff}.gr.D{color:#7ee0a8}.gr.C{color:#f1e27a}.gr.B{color:#ffb86b}.gr.A{color:#ff8e8e}.gr.S{color:#e9a6ff}
+.gbars{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;align-items:end;height:118px}
+.gbars div{display:grid;gap:4px;justify-items:center;font-size:11px;color:var(--sub)}
+.gbars i{display:block;width:100%;background:var(--panel2);border-radius:3px 3px 0 0;position:relative}
+.gbars i.v{background:var(--mint-d)}
+.rk{display:grid;grid-template-columns:22px 1fr auto;gap:8px;align-items:center;font-size:13px;padding:6px 8px;border-radius:7px}
+.rk.me2{background:var(--gold-bg);outline:1px solid rgba(234,214,166,.25)}
+.rk b{color:var(--mute);font-weight:600;text-align:center}
+.rk.me2 b{color:var(--gold)}
+.bty{border:1px solid var(--line);border-radius:8px;padding:11px 12px;background:var(--bg);font-size:12.5px}
+.bty b{font-size:13.5px}
+
+/* community */
+.posts{display:grid;gap:0}
+.post{display:grid;grid-template-columns:1fr auto;gap:12px;padding:12px 2px;border-bottom:1px solid var(--line);font-size:13.5px;align-items:center}
+.post:last-child{border:0}
+.post small{color:var(--mute);font-size:12px;white-space:nowrap}
+.notice{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:16px 18px;background:var(--panel);font-size:13px;color:var(--sub)}
+.notice b{color:var(--text)}
+
+/* footer */
+#gf{margin-top:56px;border-top:1px solid var(--line);background:var(--bg2);padding:34px 0 46px;font-size:12.5px;color:var(--sub)}
+.fg{display:grid;grid-template-columns:1.4fr repeat(3,1fr);gap:28px}
+.fg h4{color:var(--text);font-size:13px;margin-bottom:10px}
+.fg a{display:block;margin:6px 0}
+.fg a:hover{color:var(--text)}
+.cert{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line2);border-radius:8px;padding:8px 12px;margin-top:12px;color:var(--text)}
+.fine{margin-top:26px;padding-top:16px;border-top:1px solid var(--line);color:var(--mute);font-size:12px}
+
+/* ===== guild page ===== */
+.rtabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-top:4px}
+.rtabs button{background:none;border:0;padding:10px 14px;color:var(--sub);font-size:13.5px;position:relative}
+.rtabs button[aria-selected=true]{color:var(--text);font-weight:600}
+.rtabs button[aria-selected=true]::after{content:"";position:absolute;left:10px;right:10px;bottom:-1px;height:2px;background:var(--mint)}
+.rstrip{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:12px 0 18px}
+.rc{display:grid;grid-template-columns:28px 1fr;gap:2px 10px;padding:11px 13px;border:1px solid var(--line);border-radius:9px;background:var(--panel);font-size:13px}
+.rc b{grid-row:span 2;font-size:20px;color:var(--mute);align-self:center;text-align:center}
+.rc em{font-style:normal;color:var(--sub);font-size:12px}
+.rc.me2{border-color:rgba(234,214,166,.5);background:linear-gradient(90deg,var(--gold-bg),var(--panel))}
+.rc.me2 b{color:var(--gold)}
+.rnote{font-size:12px;color:var(--mute);margin:-8px 0 14px}
+
+.brand{position:relative;overflow:hidden;border:1px solid rgba(234,214,166,.28);border-radius:14px;background:
+  radial-gradient(520px 260px at 6% 30%,rgba(234,214,166,.16),transparent 70%),
+  linear-gradient(110deg,#1d1c18 0%,#16181c 46%,#16191d 100%);
+  display:grid;grid-template-columns:minmax(0,1fr) 380px}
+.brand-l{padding:32px 34px 26px}
+.brand-r{padding:26px 28px;border-left:1px solid rgba(234,214,166,.18);background:rgba(10,11,13,.35);display:flex;flex-direction:column;gap:14px}
+.rankbadge{display:inline-flex;align-items:center;gap:10px;border:1px solid rgba(234,214,166,.5);border-radius:6px;padding:5px 12px 5px 5px;color:var(--gold);font-size:12.5px;font-weight:600;background:rgba(234,214,166,.07)}
+.rankbadge b{display:grid;place-items:center;background:var(--gold);color:#241b08;border-radius:4px;min-width:34px;height:26px;font-size:14px}
+.mark{display:flex;align-items:center;gap:20px;margin:20px 0 6px}
+.wm{font-size:46px;font-weight:800;letter-spacing:.14em;color:var(--gold);line-height:1;
+  text-shadow:-8px 0 0 rgba(234,214,166,.34),-16px 0 0 rgba(234,214,166,.18),-24px 0 0 rgba(234,214,166,.08)}
+.wm-ko{font-size:18px;color:var(--sub);margin-left:30px;font-weight:600;letter-spacing:.04em}
+.bchips{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+.slogan{font-size:19px;font-weight:700;margin-top:6px}
+.bdesc{color:var(--sub);margin-top:6px;max-width:62ch}
+.bmeta{display:flex;flex-wrap:wrap;gap:8px 24px;margin-top:18px;align-items:center;font-size:13px;color:var(--sub)}
+.bmeta b{color:var(--text);font-size:15px}
+.bact{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+.lead{display:grid;grid-template-columns:132px 1fr;gap:16px}
+.ph{width:132px;height:168px;border-radius:10px;overflow:hidden;border:1px solid rgba(234,214,166,.35);background:#12141a}
+.lead h3{font-size:22px;font-weight:800;margin:2px 0 2px}
+.lead dl{margin:8px 0 0;display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:12.5px}
+.lead dt{color:var(--mute)} .lead dd{margin:0}
+.quote{font-size:13.5px;border-left:2px solid var(--gold-d);padding:4px 0 4px 12px;color:var(--text)}
+.deputy{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--sub);padding-top:12px;border-top:1px solid rgba(234,214,166,.15)}
+.deputy i{width:30px;height:30px;border-radius:50%;background:var(--panel2);display:grid;place-items:center;font-style:normal;font-weight:700;color:var(--sub)}
+
+.gtabs{display:flex;gap:2px;margin:18px 0;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
+.gtabs button{background:none;border:0;padding:13px 16px;color:var(--sub);font-size:14.5px;white-space:nowrap;position:relative}
+.gtabs button:hover{color:var(--text)}
+.gtabs button[aria-selected=true]{color:var(--text);font-weight:700}
+.gtabs button[aria-selected=true]::after{content:"";position:absolute;left:12px;right:12px;bottom:-1px;height:3px;background:var(--mint);border-radius:3px 3px 0 0}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.stat{border:1px solid var(--line);border-radius:9px;padding:15px 16px;background:var(--bg2);position:relative}
+.stat .v{font-size:27px;font-weight:800;line-height:1.15}
+.stat .v small{font-size:14px;font-weight:600;color:var(--sub);margin-left:2px}
+.stat .l{font-size:13px;color:var(--sub);margin-top:3px}
+.stat .n{font-size:11.5px;color:var(--mute);margin-top:6px}
+.info{position:absolute;right:10px;top:10px;width:22px;height:22px;border-radius:50%;border:0;background:none;color:var(--mute);display:grid;place-items:center;padding:0}
+.info:hover,.info:focus-visible{color:var(--text)}
+.info::after{content:attr(data-tip);position:absolute;right:0;top:26px;width:230px;background:#2a3038;border:1px solid var(--line2);border-radius:7px;padding:9px 11px;font-size:12px;line-height:1.5;color:var(--text);text-align:left;opacity:0;pointer-events:none;z-index:5;transform:translateY(-3px);transition:.14s}
+.info:hover::after,.info:focus-visible::after{opacity:1;transform:none}
+.fn{margin-top:12px;font-size:12px;color:var(--mute);line-height:1.6}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.bars{display:grid;gap:11px}
+.bar{display:grid;grid-template-columns:104px 1fr 56px;gap:12px;align-items:center;font-size:13px}
+.bar .t{height:12px;background:var(--panel2);border-radius:3px;overflow:hidden}
+.bar .t i{display:block;height:100%;border-radius:3px;background:var(--mint-d)}
+.bar span.n{text-align:right;font-weight:700}
+.bar small{display:block;color:var(--mute);font-size:11px}
+.hatch{background:repeating-linear-gradient(135deg,var(--line2) 0 5px,var(--panel2) 5px 10px)!important}
+.svgchart{width:100%;height:auto;display:block}
+.svgchart text{fill:var(--sub);font-size:11px;font-family:var(--font)}
+
+.org{display:grid;gap:0;justify-items:center;margin:6px 0 18px}
+.org-top{display:flex;gap:46px;position:relative}
+.org-top::before{content:"";position:absolute;left:25%;right:25%;top:50%;border-top:1px dashed var(--line2)}
+.nd{background:var(--panel2);border:1px solid var(--line2);border-radius:8px;padding:10px 14px;text-align:center;font-size:12.5px;position:relative;min-width:150px}
+.nd b{display:block;font-size:14px}
+.nd.head{border-color:rgba(234,214,166,.55);background:var(--gold-bg)}
+.org-stem{width:1px;height:20px;background:var(--line2)}
+.org-row{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:8px;width:100%;position:relative;padding-top:18px}
+.org-row::before{content:"";position:absolute;left:6.25%;right:6.25%;top:0;border-top:1px solid var(--line2)}
+.org-row .nd{min-width:0;padding:9px 6px}
+.org-row .nd::before{content:"";position:absolute;left:50%;top:-18px;height:18px;border-left:1px solid var(--line2)}
+.org-row .nd b{font-size:12.5px;line-height:1.3}
+.org-row .nd span{color:var(--mint);font-weight:700;font-size:15px;display:block;margin-top:3px}
+.org-row .nd small{color:var(--mute);display:block;font-size:11px;line-height:1.35;margin-top:2px}
+.stack{display:flex;height:18px;border-radius:4px;overflow:hidden;gap:2px;margin:6px 0 8px}
+.stack i{display:block}
+.legend{display:flex;gap:18px;font-size:12.5px;color:var(--sub);flex-wrap:wrap}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;background:var(--c)}
+
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;color:var(--mute);font-weight:500;font-size:12px;padding:8px 10px;border-bottom:1px solid var(--line2)}
+.tbl td{padding:10px;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl tr:last-child td{border:0}
+.tblw{overflow-x:auto}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:6px}
+.step{border:1px solid var(--line);border-radius:9px;padding:13px 14px;background:var(--bg2);font-size:13px}
+.step b{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--mint-bg);color:var(--mint);font-size:12px;margin-bottom:6px}
+.step small{display:block;color:var(--mute);margin-top:3px}
+
+.wf{display:grid;gap:0}
+.wfi{display:grid;grid-template-columns:22px 1fr auto;gap:12px;padding:13px 0;border-bottom:1px solid var(--line);align-items:start}
+.wfi:last-child{border:0}
+.wfi .ok{color:var(--mint);margin-top:2px}
+.wfi small{display:block;color:var(--mute);font-size:12px;margin-top:2px}
+
+.rate{display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:center;margin-bottom:16px;padding:14px 16px;background:var(--bg2);border-radius:9px;border:1px solid var(--line)}
+.rate .big{font-size:36px;font-weight:800;line-height:1}
+.rate .big small{display:block;font-size:12px;color:var(--mute);font-weight:400;margin-top:4px}
+.rr{display:grid;grid-template-columns:90px 1fr 34px;gap:10px;align-items:center;font-size:12.5px;color:var(--sub);margin:4px 0}
+.rr .t{height:6px;background:var(--panel2);border-radius:3px}.rr .t i{display:block;height:100%;background:var(--mint-d);border-radius:3px}
+.rvf{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.rv{border:1px solid var(--line);border-radius:9px;padding:14px 16px;background:var(--bg2);margin-bottom:10px}
+.rv-h{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:12.5px;color:var(--sub)}
+.stars{color:var(--mint);letter-spacing:1px}
+.rv p{margin:8px 0 10px}
+.rv-f{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.rv .tg{display:flex;gap:6px;flex-wrap:wrap}
+.help{background:none;border:1px solid var(--line);border-radius:6px;padding:3px 9px;font-size:12px;color:var(--sub)}
+.help[aria-pressed=true]{color:var(--mint);border-color:var(--mint)}
+.rm{border:1px dashed var(--line2);border-radius:9px;padding:13px 16px;margin-bottom:10px;background:var(--bg)}
+.rm q{display:block;quotes:none;font-size:14px}
+.rm .st{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.rmbox{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:18px 22px}
+
+/* modal / toast */
+.ov{position:fixed;inset:0;background:rgba(5,6,8,.72);z-index:80;display:grid;place-items:center;padding:20px}
+.md{width:min(480px,100%);max-height:92vh;overflow:auto;background:var(--panel);border:1px solid var(--line2);border-radius:14px;padding:24px}
+.md h3{font-size:18px}
+.md form{display:grid;gap:13px;margin-top:16px}
+.md .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.md .ck{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;color:var(--sub)}
+.md .ck input{width:16px;height:16px;margin-top:2px;accent-color:var(--mint)}
+.md .acts{display:flex;gap:10px;justify-content:flex-end;margin-top:4px}
+.err{color:var(--danger);font-size:12px;min-height:16px}
+#toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);opacity:0;background:#2a3038;border:1px solid var(--line2);padding:11px 18px;border-radius:9px;font-size:13px;z-index:90;transition:.2s;pointer-events:none;max-width:90vw}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:1180px){
+  .layout{grid-template-columns:1fr}.side{position:static;grid-template-columns:1fr 1fr}
+  .hero{grid-template-columns:1fr}.brand{grid-template-columns:1fr}.brand-r{border-left:0;border-top:1px solid rgba(234,214,166,.18)}
+}
+@media (max-width:760px){
+  .wrap{padding:0 16px}
+  #gh .wrap{gap:12px}.me span{display:none}.me{padding:4px}
+  .nav{display:none}
+  .sform{grid-template-columns:1fr 1fr}.sform input:first-child{grid-column:1/-1}
+  .matcher{flex-direction:column;align-items:flex-start}
+  .stats{grid-template-columns:1fr 1fr}.two{grid-template-columns:1fr}
+  .rstrip{grid-template-columns:1fr 1fr}.side{grid-template-columns:1fr}
+  .org-row{grid-template-columns:repeat(4,1fr)}.org-row::before,.org-row .nd::before{display:none}.org-row{padding-top:0}
+  .org-top{flex-direction:column;gap:10px}.org-top::before{display:none}
+  .steps{grid-template-columns:1fr 1fr}.fg{grid-template-columns:1fr 1fr}
+  .wm{font-size:32px}.lead{grid-template-columns:104px 1fr}.ph{width:104px;height:140px}
+  .hero-main{padding:20px}.hero-main h1{font-size:22px}
+  .bar{grid-template-columns:84px 1fr 48px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+
+/* guild list + generic guild */
+.glist{display:grid;gap:10px}
+.grow{display:grid;grid-template-columns:40px 52px minmax(0,1fr) auto auto;gap:16px;align-items:center;padding:16px 18px;background:var(--panel);border:1px solid var(--line);border-radius:10px}
+.grow:hover{border-color:var(--sub)}
+.grow.me2{border-color:rgba(234,214,166,.5);background:linear-gradient(90deg,var(--gold-bg),var(--panel) 60%)}
+.grow .no{font-size:24px;font-weight:800;color:var(--mute);text-align:center}
+.grow.me2 .no{color:var(--gold)}
+.grow h3{font-size:16.5px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.grow p{color:var(--sub);font-size:13px;margin-top:3px}
+.gmark{width:48px;height:48px;border-radius:10px;background:var(--panel2);display:grid;place-items:center;font-weight:800;font-size:19px;color:var(--mint);border:1px solid var(--line2)}
+.gmark.gold{color:var(--gold);background:var(--gold-bg);border-color:rgba(234,214,166,.45)}
+.gm{display:flex;gap:22px;font-size:12px;color:var(--sub)}
+.gm b{display:block;color:var(--text);font-size:15px}
+.gm .hl b{color:var(--mint)}
+.w h3 a:hover{color:var(--mint)}
+.gb{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:28px 30px;display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:28px}
+.gb h1{font-size:34px;font-weight:800;letter-spacing:.06em;line-height:1.1;display:flex;gap:14px;align-items:center}
+.gb .gmark{width:64px;height:64px;font-size:28px}
+.gb .ko{color:var(--sub);font-size:17px;font-weight:600;margin:6px 0 0 78px}
+.gb-r{border-left:1px solid var(--line);padding-left:26px;display:grid;gap:12px;align-content:start;font-size:13px}
+.gb-r i{width:46px;height:46px;border-radius:50%;background:var(--panel2);display:grid;place-items:center;font-style:normal;font-weight:700;color:var(--mint);font-size:17px}
+.gwarn{display:flex;gap:10px;align-items:flex-start;border:1px solid rgba(255,179,71,.4);background:var(--warn-bg);color:var(--warn);border-radius:10px;padding:14px 16px;font-size:13px}
+.gwarn.red{border-color:rgba(255,107,107,.4);background:var(--danger-bg);color:var(--danger)}
+@media (max-width:1180px){.gb{grid-template-columns:1fr}.gb-r{border-left:0;padding-left:0;border-top:1px solid var(--line);padding-top:16px}}
+@media (max-width:760px){.grow{grid-template-columns:32px 44px 1fr}.grow .gm,.grow .btn{grid-column:1/-1}.gb{padding:20px}.gb .ko{margin-left:0}.gb h1{font-size:26px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<a class="skip" href="#app">본문으로 건너뛰기</a>
+
+<header id="gh">
+  <div class="wrap">
+    <a class="logo" href="#/" aria-label="GATEWORK 채용 홈">
+      <svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M5 28V14a11 11 0 0122 0v14" stroke="#35f2c2" stroke-width="3" stroke-linecap="round"/><path d="M11 28V15a5 5 0 0110 0v13" stroke="#edf0f2" stroke-width="2.4" stroke-linecap="round"/></svg>
+      <span>GATE<b>WORK</b></span>
+    </a>
+    <nav class="nav" aria-label="주 메뉴">
+      <a href="#/" data-nav="home">채용 홈</a>
+      <a href="#/" data-nav="search" data-go="jobs">공고 검색</a>
+      <a href="#/guilds" data-nav="major">메이저 길드</a>
+      <a href="#/" data-nav="rising" data-soon="신흥 강자 랭킹">신흥 강자</a>
+      <a href="#/" data-nav="info" data-soon="게이트·공략 정보">게이트·공략 정보</a>
+      <a href="#/" data-nav="exam" data-soon="시험·복무 일정">시험·복무 일정</a>
+      <a href="#/" data-nav="comm" data-soon="커뮤니티">커뮤니티</a>
+    </nav>
+    <div class="hr">
+      <button class="ib" data-act="soon" data-m="통합 검색" aria-label="검색"><svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l5 5"/></svg></button>
+      <button class="ib" data-act="soon" data-m="알림함" aria-label="알림 3건"><svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 17h12l-1.5-2v-5a4.5 4.5 0 00-9 0v5L6 17zM10 20h4"/></svg><span class="dot"></span></button>
+      <button class="ib" data-act="scraps" aria-label="스크랩한 공고"><svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M7 4h10v16l-5-4-5 4z"/></svg><span class="cnt" id="scnt" hidden>0</span></button>
+      <div class="me" data-act="soon" data-m="내 정보" role="button" tabindex="0"><i>한</i><span>한서진<small>입소 150차 · B급</small></span></div>
+    </div>
+  </div>
+</header>
+
+<div id="ticker"><div class="wrap" id="tkw"></div></div>
+<main id="app" tabindex="-1"></main>
+<footer id="gf"></footer>
+<div id="mroot"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ---------- helpers ---------- */
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const IC={
+  check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>',
+  alert:'<path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17h.01"/>',
+  lock:'<rect x="6" y="11" width="12" height="9" rx="2"/><path d="M9 11V8a3 3 0 016 0v3"/>',
+  shield:'<path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/>',
+  mark:'<path d="M7 4h10v16l-5-4-5 4z"/>',
+  arrow:'<path d="M9 6l6 6-6 6"/>',
+  pin:'<path d="M12 21s7-6 7-11a7 7 0 10-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>',
+  doc:'<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M10 12h5M10 16h5"/>',
+  down:'<path d="M6 9l6 6 6-6"/>'
+};
+const ic=(n,s=16)=>`<svg class="ic" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[n]}</svg>`;
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('show'),2600)}
+const scraps=new Set();
+function syncScrap(){const c=$('#scnt');c.hidden=!scraps.size;c.textContent=scraps.size;$$('.scrap').forEach(b=>b.setAttribute('aria-pressed',scraps.has(b.dataset.id)))}
+
+/* ---------- 마석 시세 (세계관 데이터) ---------- */
+const STONE=[{g:'E',p:40000,c:1.2},{g:'D',p:280000,c:-0.4},{g:'C',p:1960000,c:2.1},{g:'B',p:13720000,c:0.6},{g:'A',p:96040000,c:-1.3}];
+const won=n=>n>=1e8?(n/1e8).toFixed(1)+'억':Math.round(n/1e4).toLocaleString()+'만';
+function drawTicker(){
+  $('#tkw').innerHTML=`<div class="tk-l">마석 시세<span class="mute sm">개당</span></div>`+
+  STONE.map(s=>`<div class="tk"><b class="gr ${s.g}">${s.g}</b><span>${won(s.p)}</span><em class="${s.c>=0?'up':'dn'}">${s.c>=0?'▲':'▼'}${Math.abs(s.c).toFixed(1)}%</em></div>`).join('')+
+  `<div class="tk"><b class="gr S">S</b><span class="sub">정기경매 최근 낙찰</span><span>8,420억</span></div>`+
+  `<div class="tk-r"><span class="live">오늘 신규 게이트 14건</span><span class="live warn">변이 1건</span><span class="live">브레이크 경보 없음</span></div>`;
+}
+if(!matchMedia('(prefers-reduced-motion:reduce)').matches){
+  setInterval(()=>{STONE.forEach(s=>{const d=(Math.random()-.5)*.012;s.p=Math.round(s.p*(1+d));s.c=Math.max(-4,Math.min(4,+(s.c+d*100).toFixed(1)))});drawTicker()},7000);
+}
+
+/* ---------- 공고 데이터 ---------- */
+const J=[
+ {id:'vg-hunter',g:'verglow',org:'VERGLOW 베르글로',scale:'메이저',type:'combat',series:['강화','방출','조작','감응'],title:'신입 헌터 / 전투부',
+  d:'복무 이수자 우대. 신규 인력 교육 과정을 운영하며 정식 지원 절차와 평가를 거칩니다.',region:'서울 본사',emp:'정규직 · 수습 3개월',dl:9,surv:'99.2',
+  tags:[['협회 인증 메이저','mint'],['신입 교육팀 운영',''],['침식 검진 지원','']],f:{service:1,refuse:1,cert:1,guide:1},
+  more:['안전 이수증: 복무 이수자는 면제, 비이수자는 헌터협회 안전 이수증(유효 5년) 필요','계약서 사전 열람 지원 · 위약금·과태료 대납 계약 없음','전형: 서류·자격 확인 → 직무 평가 → 인사 면접 → 수습 배치'],up:'2시간 전'},
+ {id:'orbis',g:'orbis',org:'ORBIS 오르비스',scale:'대형',type:'combat',series:['강화','방출'],title:'신입 헌터 (강화·방출형)',
+  d:'신입 교육팀이 3개월간 공략 절차와 철수 기준을 교육합니다. 복무 이수자는 안전 이수증이 면제됩니다.',region:'서울 · 인천',emp:'정규직 · 수습 6개월',dl:14,surv:'99.5',
+  tags:[['협회 인증 대형','mint'],['신입 교육팀 운영',''],['침식 검진 지원','']],f:{service:1,cert:1,guide:1},
+  more:['안전 이수증: 복무 이수자 면제','가이드팀 상주 · 일일 치료량 상한 준수','소형 게이트 신인 슬롯 입찰 시 길드 실적 승계'],up:'어제'},
+ {id:'noeul',g:'noeul',org:'노을수렵단',scale:'소형',type:'combat',series:['강화','조작'],title:'경력 헌터 모집 — 사수 1명이 가르칩니다',
+  d:'공략 경험이 있는 분을 찾습니다. 별도 교육팀은 없고 팀장이 현장에서 직접 알려 드립니다.',region:'경기 서부',emp:'계약직 1년',dl:null,surv:'91.2',survLow:1,
+  tags:[['소형',''],['안전 이수증 필수','warn'],['교육 지원 없음','']],f:{cert:1,refuse:1},
+  more:['복무 미이수자는 헌터협회 안전 이수증 제출 필수','소형 게이트 위주 · 가이드팀 없음(외부 가이드 연계)','최근 1년 생존율이 업계 평균보다 낮게 공시되어 있습니다'],up:'3일 전'},
+ {id:'daesung',g:'daesung',org:'대성 하운드',scale:'대형',type:'noncombat',series:[],title:'정산·법무·장비 담당 (비전투)',
+  d:'공략 보상 정산, 계약 검토, 장비 유지보수 직무를 함께 모집합니다. 능력자와 일반인 모두 지원할 수 있습니다.',region:'서울 · 판교',emp:'정규직',dl:21,surv:null,
+  tags:[['능력자·일반인 모두','mint'],['복무 가산점 적용',''],['가이드팀 보유','']],f:{service:1,guide:1,noncombat:1,refuse:1},
+  more:['복무 가산점은 센터 내 직군이 아닌 길드 채용에서는 길드 자율 적용','마석 취급 부서는 차폐 용기 지급 및 침식 검진 지원','자격(정산사·법무 등)은 직무별 별도 요건'],up:'5일 전'},
+ {id:'arcana',g:'arcana',org:'아르카나 웍스',scale:'중형',type:'guide',series:[],title:'가이드 전속 모집',
+  d:'접촉 수위 동의서가 필수입니다. 계약 조건과 치료·보호 기준을 지원 전에 확인할 수 있습니다.',region:'서울 강북',emp:'전속 계약',dl:null,surv:null,
+  tags:[['가이드보호부서 계약 감사 완료','mint'],['접촉 수위 동의서 필수','gold'],['일일 치료량 상한 준수','']],f:{guide:1,refuse:1},
+  more:['지원 정보는 가이드보호부서 비공개 창구로만 처리됩니다','심층 접촉은 서면 동의와 기록이 있어야 진행합니다','호위 배정 기준과 해지 조건을 계약 전 열람할 수 있습니다'],up:'1주 전'},
+ {id:'cheongsol',g:'cheongsol',org:'청솔 파티',scale:'소형',type:'combat',series:['강화','방출','조작'],title:'복무 대신 과태료 대납 가능 — 계약 기간 5년',
+  d:'복무 대신 과태료를 대납해 드립니다. 계약 기간 동안 타 길드 이직은 제한됩니다.',region:'지역 무관',emp:'계약직 5년',dl:3,surv:null,
+  sus:1,tags:[['과태료 대납','warn'],['중도 해지 시 위약금','red']],f:{},
+  more:['대납 금액은 중도 해지 시 환수 대상이 될 수 있습니다','복무 거부자에 대한 차별은 법령으로 금지되어 있으며, 대납을 조건으로 한 장기 구속 계약은 협회가 모니터링합니다','계약서 사전 열람은 지원 후에만 가능합니다'],up:'오늘'},
+ {id:'center',g:'center',org:'센터 게이트전담부서',scale:'공공',type:'public',series:['강화','방출','조작','감응'],title:'센터 소속 헌터 (즉응 대기)',
+  d:'장비와 가이드를 우선 배정받고 정찰 정보를 먼저 공유받습니다. 급박 시 1순위로 지정 투입됩니다.',region:'권역별 센터',emp:'공무직',dl:30,surv:null,
+  tags:[['공공','mint'],['마석 수익 센터 귀속','warn'],['길드가 기피하는 게이트 담당','']],f:{service:1,guide:1},
+  more:['입찰 가산점은 없습니다','복무 경력 가산점 적용(상한 있음)','저수익·핵 위치 불확실·변이 게이트를 맡는 경우가 많습니다'],up:'1주 전'},
+ {id:'bukdu',g:'bukdu',org:'북두 마석사업부',scale:'중형',type:'noncombat',series:[],title:'마석 감정·가공 보조',
+  d:'마석 감정과 가공을 보조합니다. 차폐 용기와 침식 산재 보험을 제공합니다. 능력자·일반인 모두 지원 가능.',region:'충북 오송',emp:'정규직',dl:12,surv:null,
+  tags:[['능력자·일반인 모두','mint'],['침식 산재 보험',''],['협회 공인 감정사 우대','']],f:{noncombat:1,refuse:1},
+  more:['고순도 마석 취급 시 월 1회 침식 검진','감정 자격은 입사 후 취득 지원','산재 인정 기준은 공시 상세에서 확인'],up:'2일 전'}
+];
+
+/* ---------- 공통 위젯 ---------- */
+const SLOTS=[['E','북부 11구역 상가 지하','4~6명 · 초보 참여 가능','D-2'],['D','성남 외곽 창고단지','5~8명 · 가이드 동행','D-3'],['D','인천 항만 배후지','6~8명 · 경력 1회 이상','D-5']];
+function slotsW(){return `<section class="w"><h3>이번 주 신인 슬롯 게이트<small>소형 게이트의 약 20%</small></h3><ul>${SLOTS.map(s=>`<li class="wi"><span class="gr ${s[0]}">${s[0]}</span><span>${s[1]}<small>${s[2]}</small></span><span class="badge ${s[3]==='D-2'?'warn':''}">입찰 ${s[3]}</span></li>`).join('')}</ul><p class="fn">후보군 안에서만 입찰합니다. 길드 없는 개인 헌터는 소형 게이트에 한해 파티를 짜 입찰할 수 있습니다.</p></section>`}
+const RANK={overall:{n:'국내 종합',u:'종합 지수',r:[['베르글로',98.4,'18개월 연속'],['오르비스',94.1,'▼1'],['대성 하운드',91.7,'▲1'],['아르카나 웍스',88.2,'▲4'],['북두',86.9,'▲1']]},
+ ops:{n:'게이트 공략 실적',u:'최근 1년 완료',r:[['베르글로','86건',''],['오르비스','79건',''],['대성 하운드','74건',''],['아르카나 웍스','61건',''],['북두','55건','']]},
+ surv:{n:'생존율',u:'출동 인력 기준',r:[['오르비스','99.5%',''],['베르글로','99.2%',''],['북두','98.9%',''],['대성 하운드','98.7%',''],['아르카나 웍스','98.1%','']]},
+ talent:{n:'인재 선호도',u:'선호도 점수',r:[['오르비스','96',''],['대성 하운드','93',''],['베르글로','91',''],['아르카나 웍스','88',''],['북두','82','']]},
+ rise:{n:'최근 상승 길드',u:'6개월 순위 변동',r:[['아르카나 웍스','▲6',''],['북두','▲3',''],['한빛 사냥단','▲3',''],['카이로스','▲2',''],['하늘새김','▲2','']]}};
+function rankW(){const r=GL('idx').slice(0,5);return `<section class="w"><h3><a href="#/guilds">메이저 길드 랭킹</a><small>국내 종합</small></h3><ul>${r.map(([id,g],i)=>`<li><a class="rk${id==='verglow'?' me2':''}" href="#/guild/${id}"><b>${i+1}</b><span>${g.ko}</span><span class="sm ${id==='verglow'?'':'mute'}">${g.m.idx.toFixed(1)}</span></a></li>`).join('')}</ul></section>`}
+function gateW(){const g=[['E',5],['D',4],['C',3],['B',1],['A',1],['S',0]];return `<section class="w"><h3>오늘 신규 게이트 14건<small>센터 판정 기준</small></h3><div class="gbars">${g.map(([k,n])=>`<div><span>${n}</span><i class="${n?'v':''}" style="height:${Math.max(n*12,3)}px"></i><span class="gr ${k}">${k}</span></div>`).join('')}</div><p class="fn">변이 게이트 1건(C변)은 합계에 포함되어 있으며 철수 기준이 엄격합니다.</p></section>`}
+function bountyW(){return `<section class="w"><h3>공인 위험인물 현상금<small>빌런전담부서 지정</small></h3><ul style="gap:9px">
+ <li class="bty"><b>'잿빛 서기'</b> <span class="badge red">위협도 3단계</span><br><span class="sub">도주 중 · 생포 우선 · 현상금 2.4억</span></li>
+ <li class="bty"><b>'적풍'</b> <span class="badge red">위협도 4단계</span><br><span class="sub">반복 중범죄 · 현상금 9억 · 생사 조건은 매뉴얼에 따름</span></li></ul>
+ <p class="fn">추적 전 센터장이 제공하는 상황 매뉴얼 확인이 필수입니다. 폭주자는 지정 대상이 아닙니다.</p></section>`}
+function schedW(){return `<section class="w"><h3>시험·복무 일정</h3><ul>
+ <li class="wi"><span class="badge mint">접수</span><span>복무 입소 155차(봄)<small>만 18~26세 중 본인이 기수 선택</small></span><span class="sm warn" style="color:var(--warn)">D-9</span></li>
+ <li class="wi"><span class="badge">시험</span><span>헌터 등급 시험 2155 1차<small>헌터협회 · 공명 생체 측정 포함</small></span><span class="sm mute">D-26</span></li>
+ <li class="wi"><span class="badge">교육</span><span>안전 이수증 보수 교육(1일)<small>등급 상승·사고 이력자 대상</small></span><span class="sm mute">매주</span></li>
+ <li class="wi"><span class="badge">전역</span><span>입소 150차 전역<small>2155년 4월 · 길드 면접 접수 중</small></span><span class="sm mute">D-49</span></li></ul></section>`}
+const POSTS=[['150차 전역 앞두고 길드 면접 후기 — 과태료 대납 계약 물어보면 분위기 싸해짐',312,'채용후기'],['복무 안 간 B급인데 안전 이수증 갱신 후기(하루 교육)',188,'자격'],['[제보] 청솔 파티 계약서 위약금 조항 이거 괜찮나요?',241,'계약'],['후보군 선정 또 뒷말… 이번에도 선연락 못 받았다는 중형 길드',167,'업계'],['침식 검진 중등 나왔더니 출동 배정이 줄었어요',203,'침식'],['복무 거부자 차별 신고 접수 방법 정리',96,'법령']];
+function commW(){return `<section class="sec"><h2>커뮤니티 인기글<small>익명 · 사실 확인 전 게시글 포함</small></h2><div class="posts">${POSTS.map(p=>`<div class="post"><span><span class="badge" style="margin-right:8px">${p[2]}</span>${p[0]}</span><small>댓글 ${p[1]}</small></div>`).join('')}</div></section>`}
+
+/* ---------- footer ---------- */
+function drawFooter(){$('#gf').innerHTML=`<div class="wrap"><div class="fg">
+ <div><div class="logo" style="color:var(--text)"><svg width="26" height="26" viewBox="0 0 32 32" fill="none"><path d="M5 28V14a11 11 0 0122 0v14" stroke="#35f2c2" stroke-width="3" stroke-linecap="round"/><path d="M11 28V15a5 5 0 0110 0v13" stroke="#edf0f2" stroke-width="2.4" stroke-linecap="round"/></svg><span>GATE<b>WORK</b></span></div>
+  <p style="margin-top:10px;max-width:34ch">헌터와 지원 인력, 길드와 게이트 관련 업체를 연결하는 전문 채용 플랫폼입니다.</p>
+  <div class="cert">${ic('shield',18)}<span>헌터협회 인증 사이트<small class="mute" style="display:block">인증번호 HA-2152-0417</small></span></div></div>
+ <div><h4>구직자</h4><a href="#/">공고 검색</a><a href="#/guilds">메이저 길드</a><a data-act="soon" data-m="시험·복무 일정" href="#/">시험·복무 일정</a><a data-act="soon" data-m="복무 거부자 차별 금지 법령 안내" href="#/">복무 거부자 차별 금지 법령 안내</a></div>
+ <div><h4>신고·보호</h4><a data-act="soon" data-m="공고 신고 센터" href="#/">공고 신고 센터</a><a data-act="soon" data-m="채용 사기·불공정 계약 신고" href="#/">채용 사기·불공정 계약 신고</a><a data-act="soon" data-m="가이드 보호 및 계약 감사 안내" href="#/">가이드 보호 및 계약 감사 안내</a></div>
+ <div><h4>플랫폼</h4><a data-act="soon" data-m="플랫폼 소개" href="#/">GATEWORK 플랫폼 소개</a><a data-act="soon" data-m="개인정보 및 계약 정보 보호 정책" href="#/">개인정보 및 계약 정보 보호 정책</a><a data-act="soon" data-m="기업 서비스" href="#/">길드 기업 서비스</a></div></div>
+ <p class="fine">본 화면은 2155년 가상 세계관의 디자인 시안입니다. 공시 수치와 후기는 설정용 가상 데이터이며, 길드 소문은 사실 확인 전 커뮤니티 발췌입니다.</p></div>`}
+
+/* ---------- HOME ---------- */
+const NOW=2155.2;
+const state={q:'',series:'',scale:'',flags:new Set(),sort:'rec',N:150};
+const CHIPS=[['service','복무 이수 우대'],['refuse','복무 거부 이력 불문'],['cert','안전 이수증 안내 포함'],['guide','가이드팀 보유'],['noncombat','비전투직']];
+function mon(t){return Math.floor((t-Math.floor(t))*12+1e-6)+1}
+function phase(N){
+  const tin=2078.25+(N-1)/2,age=NOW-tin,f=t=>`${Math.floor(t)}년 ${mon(t)}월`;
+  if(age<0)return{i:-1,txt:`입소 ${N}차는 <b>${f(tin)}</b> 입소 예정입니다. 입소 전에는 B급 이상 의무 등록과 연 1회 침식 검진만 받으면 됩니다.`};
+  if(age<.5)return{i:0,txt:`입소 ${N}차 · <b>기초 교육 중</b>입니다. 전역은 ${f(tin+2.5)} 예정이며, 현장 배속은 ${f(tin+.5)}부터입니다.`};
+  if(age<2)return{i:1,txt:`입소 ${N}차 · <b>현장 배속 중</b>입니다. ${f(tin+2)}부터 진로 면담이 시작되고 길드 면접·시험 준비가 허용됩니다.`};
+  if(age<2.5)return{i:2,txt:`입소 ${N}차 · <b>${f(tin+2.5)} 전역 예정</b>입니다. 지금은 진로 면담 단계라 길드 면접과 시험 준비가 허용됩니다.`};
+  return{i:3,txt:`입소 ${N}차 · <b>복무 이수 완료</b>(${f(tin+2.5)} 전역)입니다. 안전 이수증이 면제되고 복무 경력 가산점을 받습니다.`};
+}
+function drawMatcher(){
+  const N=state.N;let p;
+  if(!(N>=1&&N<=160)){$('#mres').innerHTML='입소 차수는 1~160 사이로 입력해 주세요.';return}
+  p=phase(N);const n=J.filter(j=>j.f.service).length;
+  $('#mres').innerHTML=p.txt+(p.i>=2?` 복무 이수 우대 공고 <b>${n}건</b>을 모았습니다.`:'');
+  const lab=['기초 6개월','현장 배속 18개월','면담 6개월'];
+  $('#phase').innerHTML=`<div class="phase">${[0,1,2].map(i=>`<div class="${p.i>i?'done':p.i===i?'cur':''}"></div>`).join('')}</div><div class="phase-l">${lab.map((l,i)=>`<span class="${p.i===i?'cur':''}">${l}</span>`).join('')}</div>`;
+}
+function match(j){
+  const q=state.q.trim().toLowerCase();
+  if(q&&!(j.org+j.title+j.d+j.region).toLowerCase().includes(q))return false;
+  if(state.series&&!j.series.includes(state.series))return false;
+  if(state.scale&&j.scale!==state.scale)return false;
+  for(const f of state.flags){if(f==='noncombat'){if(j.type!=='noncombat')return false}else if(!j.f[f])return false}
+  return true;
+}
+function card(j,noLink){
+  const dl=j.dl==null?'상시 채용':`마감 D-${j.dl}`;
+  return `<article class="job${j.sus?' sus':''}" data-id="${j.id}">
+  <button class="scrap" data-act="scrap" data-id="${j.id}" aria-pressed="${scraps.has(j.id)}" aria-label="${j.title} 스크랩">${ic('mark',17)}</button>
+  <div class="job-top"><span class="org">${j.org}</span><span class="badge">${j.scale}</span>${j.sus?'<span class="badge warn">협회 모니터링 중</span>':''}<span class="mute">${j.up} 등록</span></div>
+  <h3>${j.title}</h3><p class="d">${j.d}</p>
+  <div class="job-meta"><span>${ic('pin',13)} ${j.region}</span><span>${j.emp}</span>${j.surv?`<span>출동 인력 생존율 <b style="${j.survLow?'color:var(--warn)':''}">${j.surv}%</b></span>`:''}<span class="${j.dl!=null&&j.dl<=3?'':''}" style="${j.dl!=null&&j.dl<=3?'color:var(--warn)':''}">${dl}</span></div>
+  <div class="job-tags">${j.tags.map(t=>`<span class="badge ${t[1]}">${t[0]}</span>`).join('')}</div>
+  ${j.sus?`<div class="warnline">${ic('alert',16)}<span>대납 금액 환수 조건과 계약 기간 구속 여부를 지원 전에 확인하세요. 이상 계약은 신고할 수 있습니다.</span></div>`:''}
+  <ul class="more" id="m-${j.id}" style="list-style:disc">${j.more.map(m=>`<li>${m}</li>`).join('')}</ul>
+  <div class="job-foot"><button class="btn sm" data-act="more" data-id="${j.id}" aria-expanded="false">조건 자세히 ${ic('down',14)}</button>
+  <span style="display:flex;gap:8px">${noLink?'':`<a class="btn sm" href="#/guild/${j.g}">길드 상세 보기</a>`}${j.sus?`<button class="btn sm" data-act="report">계약 신고</button>`:j.type==='guide'?`<button class="btn sm gold" data-act="guide" data-id="${j.id}">가이드 전속 문의</button>`:`<button class="btn sm pri" data-act="apply" data-id="${j.id}">지원하기</button>`}</span></div></article>`;
+}
+function drawJobs(){
+  let list=J.filter(match);
+  if(state.sort==='dl')list.sort((a,b)=>(a.sus?1:0)-(b.sus?1:0)||(a.dl??99)-(b.dl??99));
+  if(state.sort==='surv')list.sort((a,b)=>(+b.surv||0)-(+a.surv||0));
+  if(state.sort==='new')list=list.slice();
+  $('#jc').textContent=list.length;
+  $('#jl').innerHTML=list.length?list.map(j=>card(j)).join(''):`<div class="empty">조건에 맞는 공고가 없습니다.<br>필터를 하나 줄이거나 검색어를 바꿔 보세요.<br><button class="btn sm" style="margin-top:12px" data-act="reset">필터 초기화</button></div>`;
+}
+function renderHome(){
+  $('#app').innerHTML=`<div class="wrap">
+  <section class="hero" aria-label="공고 검색">
+    <div class="hero-main">
+      <h1>복무 이력부터 맞춰 보고,<br>조건이 보이는 공고만 지원하세요</h1>
+      <p>공고마다 안전 이수증 요건, 계약 구속 여부, 가이드 보호 심사 결과를 표시합니다.</p>
+      <div class="sform" role="search">
+        <input id="q" placeholder="직무, 길드, 지역 검색" aria-label="검색어">
+        <select id="fs" aria-label="능력 계열"><option value="">계열 전체</option><option>강화</option><option>방출</option><option>조작</option><option>감응</option></select>
+        <select id="fc" aria-label="길드 규모"><option value="">규모 전체</option><option>소형</option><option>중형</option><option>대형</option><option>메이저</option><option>공공</option></select>
+        <button class="btn pri go" data-act="search">검색</button>
+      </div>
+      <div class="matcher"><label>내 복무 입소 <input id="nn" type="number" min="1" max="160" value="${state.N}" aria-label="입소 차수"> 차</label><div id="mres" aria-live="polite"></div></div>
+      <div class="chips" role="group" aria-label="빠른 필터">${CHIPS.map(c=>`<button class="chip" data-act="chip" data-k="${c[0]}" aria-pressed="${state.flags.has(c[0])}">${c[1]}</button>`).join('')}</div>
+    </div>
+    <aside class="banner" aria-label="복무 단계">
+      <span class="badge mint" style="align-self:flex-start">전역 시즌</span>
+      <h2>입소 150차 전역(2155년 4월)을 앞두고<br>길드 면접이 열렸습니다</h2>
+      <div id="phase"></div>
+      <p class="sub sm">복무 2년 6개월 중 마지막 6개월은 진로 면담 기간이며, 이때부터 길드 면접과 시험 준비가 허용됩니다.</p>
+      <button class="btn" data-act="chipOnly" data-k="service">복무 이수 우대 공고만 보기</button>
+    </aside>
+  </section>
+  <div class="crumb" style="padding-top:8px"></div>
+  <div class="layout"><div class="col" id="jobs">
+    <div class="listhd"><h2>채용 공고 <span class="mint" style="color:var(--mint)" id="jc">0</span>건</h2>
+      <label class="sub sm">정렬 <select id="so" style="height:34px;margin-left:6px"><option value="rec">추천순</option><option value="dl">마감 임박순</option><option value="surv">생존율 높은순</option><option value="new">최신 등록순</option></select></label></div>
+    <div class="jobs" id="jl"></div>
+    ${commW()}
+    <div class="notice">${ic('shield',20)}<div><b>복무 거부 이력만으로 지원자를 배제할 수 없습니다.</b><br>법령상 복무 거부자에 대한 사회적 차별은 금지되어 있습니다. 차별이 의심되는 공고는 하단의 공고 신고 센터로 알려 주세요.</div></div>
+  </div>
+  <aside class="side" aria-label="보조 정보">${slotsW()}${gateW()}${rankW()}${bountyW()}${schedW()}</aside></div></div>`;
+  drawMatcher();drawJobs();syncScrap();
+}
+
+/* ---------- GUILD ---------- */
+const TABS=[['home','길드 홈'],['ops','공략 실적'],['org','조직·인력'],['jobs','채용 공고'],['welfare','복지·계약'],['reviews','구성원 후기'],['rumor','업계 소문']];
+let rkKey='overall';
+const VJ=[
+ {id:'vg-hunter',t:'신입 헌터 / 전투부',e:'정규직 · 수습 3개월',dl:9,r:'서울 본사',tg:[['복무 이수자 우대','mint'],['신규 인력 교육 과정 운영',''],['정식 지원 절차·평가 필요','']],n:'안전 이수증: 복무 이수자는 면제, 비이수자는 헌터협회 안전 이수증 제출'},
+ {id:'vg-analyst',t:'게이트 공략분석관',e:'정규직',dl:16,r:'서울 본사',tg:[['분석 역량·자격 요건 중시',''],['작전 기록·위험도 평가 경험 우대','mint']],n:'전투 경력보다 구조 분석과 위험 예측 역량을 평가합니다'},
+ {id:'vg-eng',t:'장비 정비 엔지니어',e:'정규직',dl:null,r:'서울 본사 · 현장 파견',tg:[['능력자·일반인 모두 지원','mint'],['관련 자격·실무 경력 우대','']],n:'마석 장비 취급 시 차폐 용기 지급, 정기 침식 검진 지원'},
+ {id:'vg-legal',t:'정산·법무 담당',e:'정규직',dl:21,r:'서울 본사',tg:[['능력자·일반인 모두 지원','mint'],['공략 보상 정산·계약 검토','']],n:'공략 보상 정산, 손실·분쟁 정산, 계약 검토 업무'},
+ {id:'vg-guide',t:'가이드 전속 모집',e:'전속 계약',dl:null,r:'서울 본사 치료동',tg:[['접촉 수위 동의서 필수','gold'],['가이드보호부서 계약 감사 완료','mint'],['계약 조건 사전 확인 가능','']],n:'지원 정보는 가이드보호부서 비공개 창구로만 처리, 치료·보호 기준은 지원 전 열람 가능',guide:1}
+];
+const OPS=[['2155.03.04','서해 항만 C변','특수·변이','24','11시간','완료 · 핵 회수','핵이 게이트 내부에서 맥동하는 유형. 감응형 탐지로 위치를 확정해 회수'],
+ ['2155.02.27','경기 북부 폐광 A','고위험','62','29시간','완료 · 보스 처치','센터 직속 부대와 합동 공략'],
+ ['2155.02.21','부산 신항 B','고위험','38','17시간','완료 · 보스 처치',''],
+ ['2155.02.16','성남 외곽 D','중위험','14','6시간','완료 · 보스 처치',''],
+ ['2155.02.09','의정부 상가 E','저위험','8','2시간','완료 · 보스 처치','신인 슬롯 후보군 입찰'],
+ ['2155.02.02','대전 지하 C','중위험','22','9시간','완료 · 보스 처치',''],
+ ['2155.01.26','울산 산단 B변','특수·변이','41','20시간','완료 · 핵 회수',''],
+ ['2155.01.19','인천 공항 A','고위험','58','31시간','완료 · 보스 처치','합동 공략 · 마석 신고 완료'],
+ ['2155.01.11','포항 해안 B변','특수·변이','33','14시간','철수','철수 기준 도달로 중단. 불완료 처리(성공률에 반영)']];
+const REV=[
+ {s:4.5,st:'현직',j:'전투부',y:'3년차',t:'길드장님 소문과 달리 일정 관리는 칼같습니다. 출동 전 브리핑도 빠지는 게 없어요.',g:['관리 체계','업무 강도'],h:41},
+ {s:4,st:'현직',j:'장비개발실',y:'2년차',t:'사생활 얘기는 별로 안 하시는데 필요한 건 확실히 챙겨 줍니다. 체계는 계속 바뀌는 중이라 공지가 많아요.',g:['분위기','관리 체계'],h:33},
+ {s:4,st:'현직',j:'전투부',y:'1년차',t:'실적에 대한 기준이 명확합니다. 대신 자기 역할을 못 하면 핑계가 잘 통하지 않아요.',g:['업무 강도','교육'],h:58},
+ {s:4,st:'전직',j:'대외협력·홍보팀',y:'1년차',t:'연애 소문은 99% 믿지 마세요. 적어도 업무 중에는 그런 분위기 아닙니다.',g:['분위기'],h:76},
+ {s:4,st:'현직',j:'전투부',y:'6개월차',t:'신입 교육은 잘 짜여 있어요. 다만 초창기부터 계신 분들은 길드장님이 직접 뽑은 분들이고 저희는 인사팀 전형이라, 일하는 방식에 약간 온도차가 있습니다.',g:['교육','관리 체계'],h:27},
+ {s:4.5,st:'현직',j:'직무 비공개(가이드 보호)',y:'2년차',t:'일일 치료량 상한이 실제로 지켜집니다. 호위가 붙는 건 처음엔 낯설었는데 설명을 충분히 해 줘서 납득했어요.',g:['복지','분위기'],h:49}
+];
+const RUM=[['후보군 선정 때마다 뒷말 나오는 곳.','커뮤니티 발췌 · 사실 확인 전'],['스카우트 제안이 집요하다는 얘기가 있음.','커뮤니티 발췌 · 사실 확인 전'],['실적은 확실한데 길드장 등급은 여전히 비공개.','공시 기준 확인됨 · 사유는 공식 입장 없음'],['확장 속도가 빨라서 내부 체계도 계속 바뀌는 중이라고.','구성원 후기와 일부 일치 · 공식 입장 없음'],['히어로협회 시험까지 붙은 사람이 왜 길드를 만들었는지 아무도 모른다.','커뮤니티 발췌 · 사실 확인 전 · 공식 입장 없음']];
+const WF=[['가이드팀 상주','가이드 12명 · 접촉 수위 동의서 계약','가이드보호부서 감사 완료','2155.02.14','mint'],['일일 치료량 상한 준수 인증','가이드 보호기구 표준 기준 적용','가이드보호부서 확인','2155.02.14','mint'],['정기 침식 검진 지원','반기 1회 길드 검진 · 센터 연 1회 무상 검진과 별개','자체 공시','2155.01.05',''],['복무 거부 이력만으로 지원자를 배제하지 않음','직무 적합성과 법적 자격 심사는 별도로 진행','자체 공시 · 협회 모니터링','2155.01.30',''],['위약금·과태료 대납을 통한 장기 구속 계약 없음','대납·계약 기간 묶기 관행을 사용하지 않음','헌터협회 확인','2155.01.30','mint'],['계약서 사전 열람 지원','지원 단계에서 표준 계약서 열람 가능','자체 공시','2155.02.01',''],['공략 출동 기록·보상 정산 절차 공개','정산 기준표와 이의 신청 절차 공개','자체 공시','2155.02.01','']];
+
+function logoMark(s=64){return `<svg width="${s}" height="${s}" viewBox="0 0 64 64" fill="none" aria-hidden="true"><g stroke-linecap="round" stroke-linejoin="round" stroke-width="5"><path d="M4 14l14 36 14-36" stroke="#ead6a6" stroke-opacity=".16"/><path d="M12 14l14 36 14-36" stroke="#ead6a6" stroke-opacity=".34"/><path d="M20 14l14 36 14-36" stroke="#ead6a6"/><path d="M48 10v8M44 14h8" stroke="#fff" stroke-width="2"/></g></svg>`}
+function portrait(){return `<svg viewBox="0 0 160 200" width="100%" height="100%" role="img" aria-label="백시헌 프로필 화보 영역(이미지 교체용)">
+ <defs><linearGradient id="pg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2a2616"/><stop offset="1" stop-color="#101216"/></linearGradient>
+ <symbol id="sil" viewBox="0 0 160 200"><path d="M6 200c4-40 34-52 56-56l6-4v-22a30 36 0 01-18-34c-2-30 20-42 40-40 22 2 34 20 28 50-2 8-8 18-18 24v22l6 4c22 4 52 16 56 56z" fill="currentColor"/></symbol></defs>
+ <rect width="160" height="200" fill="url(#pg)"/><circle cx="118" cy="52" r="60" fill="#ead6a6" opacity=".12"/>
+ <use href="#sil" x="-34" style="color:#ead6a6" opacity=".14"/><use href="#sil" x="-22" style="color:#ead6a6" opacity=".24"/><use href="#sil" x="-11" style="color:#ead6a6" opacity=".4"/>
+ <path d="M6 200c4-40 34-52 56-56h36c22 4 52 16 56 56z" fill="#181b21"/><path d="M62 144l18 34 18-34" fill="#e8e2d4"/><path d="M62 144l18 34 18-34" stroke="#ead6a6" stroke-width="1.5" fill="none"/>
+ <rect x="70" y="116" width="20" height="30" fill="#c8a48b"/><ellipse cx="80" cy="92" rx="28" ry="34" fill="#d3b098"/>
+ <path d="M50 92c-4-34 18-48 36-46 24 2 32 22 26 46-4-14-14-22-30-22s-26 8-32 22z" fill="#dcc48c"/><path d="M96 60c8 4 14 12 16 22" stroke="#f1dfa8" stroke-width="2" fill="none"/>
+ <circle cx="68" cy="97" r="2.8" fill="#f6dd96"/><path d="M88 98q5-5 10 0" stroke="#f6dd96" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M70 113q10 7 21 0" stroke="#8a5f4c" stroke-width="2" fill="none" stroke-linecap="round"/></svg>`}
+
+function line3(){ // rank history svg
+  const pts=[[36,18],[30,12],[24,7],[21,3],[18,1],[12,1],[6,1],[0,1]];
+  const W=560,H=200,pl=34,pr=16,pt=30,pb=32,x=m=>pl+(36-m)/36*(W-pl-pr),y=r=>pt+(r-1)/17*(H-pt-pb);
+  const d=pts.map((p,i)=>`${i?'L':'M'}${x(p[0]).toFixed(1)} ${y(p[1]).toFixed(1)}`).join('');
+  return `<svg class="svgchart" viewBox="0 0 ${W} ${H}" role="img" aria-label="최근 3년 국내 종합 순위 변화: 3년 전 18위에서 현재 1위">
+  ${[1,5,10,15,18].map(r=>`<line x1="${pl}" x2="${W-pr}" y1="${y(r)}" y2="${y(r)}" stroke="#2c323a"/><text x="${pl-8}" y="${y(r)+4}" text-anchor="end">${r}위</text>`).join('')}
+  ${[[36,'3년 전'],[24,'2년 전'],[12,'1년 전'],[0,'현재']].map(([m,l])=>`<text x="${x(m)}" y="${H-10}" text-anchor="middle">${l}</text>`).join('')}
+  <path d="${d}" fill="none" stroke="#35f2c2" stroke-width="2.4" stroke-linejoin="round"/>
+  ${pts.map(p=>`<circle cx="${x(p[0])}" cy="${y(p[1])}" r="${[36,24,12,0].includes(p[0])?4.5:3}" fill="#101215" stroke="#35f2c2" stroke-width="2"/>`).join('')}
+  ${[[36,18],[24,7],[12,1],[0,1]].map(([m,r])=>`<text x="${x(m)}" y="${y(r)+(r===1?-10:-9)}" text-anchor="middle" style="fill:#edf0f2;font-weight:700">${r}위</text>`).join('')}
+  <text x="${x(21)+14}" y="${y(9)}" style="fill:#ead6a6">고난도 게이트 연속 공략 이후 도약</text><path d="M${x(21)+10} ${y(8)-4} L${x(21)+2} ${y(3)+8}" stroke="#ead6a6" stroke-opacity=".5" fill="none"/></svg>`}
+
+function secStats(){return `<section class="sec" data-in="home ops"><h2>핵심 공시<small>공시 기준일 2155.03.01 · 최근 1년</small></h2>
+ <div class="stats">${[
+ ['86','건','최근 1년 게이트 공략 완료','착수 88건 중 완료 86건, 철수 2건','최종 정산이 완료된 작전 기준입니다.'],
+ ['97.7','%','공략 성공률','완료 86건 ÷ 착수 88건','작전 단위 지표입니다. 인력 생존율과 별개입니다.'],
+ ['99.2','%','출동 인력 생존율','연인원 1,250명 중 순직·실종 10명','출동한 사람 기준 지표입니다. 성공률과 별개입니다.'],
+ ['20','건','고위험 게이트 공략','특수·변이 8건은 별도 분류','위험도 판정은 센터 등급과 협회 기준을 따릅니다.'],
+ ['312','명','소속 인원','전투 178 · 비전투 134','가이드 12명을 포함한 비전투 전문 인력 수입니다.'],
+ ['+28','%','최근 1년 인원 증가율','244명 → 312명','전투 인력과 비전투 인력의 합산 증가율입니다.']].map(s=>`<div class="stat"><button class="info" data-tip="${s[4]}" aria-label="${s[2]} 설명">${ic('info',15)}</button><div class="v">${s[0]}<small>${s[1]}</small></div><div class="l">${s[2]}</div><div class="n">${s[3]}</div></div>`).join('')}</div>
+ <p class="fn">공략 완료 건수는 최근 1년간 최종 정산이 완료된 작전을 기준으로 집계합니다. 생존율은 출동 인력 기준이며, 집계 기간과 산정 기준은 공시 상세에서 확인할 수 있습니다.</p></section>`}
+function secRank(){return `<section class="sec" data-in="home ops"><h2>국내 종합 순위 변화<small>최근 3년</small></h2>${line3()}<p class="fn">3년 전 18위에서 2년 전 7위로 오른 뒤, 고난도 게이트 연속 공략 이후 18개월 전부터 1위를 유지하고 있습니다. 오랜 전통의 명문이 아니라 짧은 기간에 실적으로 오른 신흥 강호입니다.</p></section>`}
+function secRisk(){const R=[['저위험',31],['중위험',27],['고위험',20],['특수·변이',8]];const tot=R.reduce((a,b)=>a+b[1],0);return `<section class="sec" data-in="home ops"><h2>위험도별 공략 실적<small>합계 ${tot}건</small></h2><div class="bars">${R.map((r,i)=>`<div class="bar"><span>${r[0]}${i===3?'<small>별도 분류</small>':''}</span><span class="t"><i style="width:${r[1]/31*100}%;${i===3?'background:var(--blue)':i===2?'background:var(--mint)':''}"></i></span><span class="n">${r[1]}건</span></div>`).join('')}</div>
+ <p class="fn">특수·변이 대응 작전은 위험도와 별도 기준으로 분류하며, 위 네 항목은 서로 중복되지 않고 합계가 완료 건수(86건)와 같습니다.</p></section>`}
+function secOpsTbl(){return `<section class="sec x-only" data-in="ops"><h2>최근 공략 작전 기록<small>최근 1년 내 최신 순</small></h2><div class="tblw"><table class="tbl"><thead><tr><th>일자</th><th>게이트</th><th>분류</th><th>출동 인원</th><th>소요</th><th>결과</th></tr></thead><tbody>
+ ${OPS.map(o=>`<tr><td>${o[0]}</td><td>${o[1]}${o[6]?`<small class="mute" style="display:block">${o[6]}</small>`:''}</td><td><span class="badge ${o[2]==='특수·변이'?'':o[2]==='고위험'?'mint':''}">${o[2]}</span></td><td>${o[3]}명</td><td>${o[4]}</td><td style="${o[5]==='철수'?'color:var(--warn)':''}">${o[5]}</td></tr>`).join('')}</tbody></table></div>
+ <p class="fn">철수 2건은 붕괴 한계 전에 철수 기준에 따라 중단한 작전이며 성공률 계산에 포함되어 있습니다.</p></section>`}
+function secOrg(){
+  const D=[['전투부','178','게이트 공략·현장 대응'],['공략분석실','26','구조 분석·위험 예측'],['인사팀','16','선발·배치·평가·교육'],['장비개발실','30','조달·정비·특수 장비'],['의무·침식관리실','22','출동 후 검진·치료 연계'],['정산·법무팀','18','보상·계약·분쟁 정산'],['대외협력·홍보팀','10','공시·언론·브랜드'],['가이드팀','12','전속 가이드·치료']];
+  const grades=[['S',1],['A',22],['B',64],['C',62],['D',28]];
+  return `<section class="sec" data-in="home org"><h2>조직 및 인력 구성<small>전투력만으로 굴러가는 길드가 아닙니다</small></h2>
+  <div class="org"><div class="org-top"><div class="nd head"><b>백시헌</b>길드장 · 영입·대외 협상</div><div class="nd head"><b>유정한</b>부길드장 · 실무·공략 지휘 보좌</div></div><div class="org-stem"></div>
+  <div class="org-row">${D.map(d=>`<div class="nd"><b>${d[0]}</b><span>${d[1]}명</span><small>${d[2]}</small></div>`).join('')}</div></div>
+  <div class="two"><div><h3 style="font-size:14px;margin-bottom:6px">전투·비전투 인력 분포</h3><div class="stack" role="img" aria-label="전투 인력 178명, 비전투 인력 134명"><i style="width:${178/312*100}%;background:var(--mint-d)"></i><i style="width:${134/312*100}%;background:var(--blue)"></i></div>
+    <div class="legend"><span style="--c:var(--mint-d)">전투 인력 178명 (57%)</span><span style="--c:var(--blue)">비전투 전문 134명 (43%)</span></div>
+    <p class="fn">비전투 134명 중 일반인 81명, 능력자 53명입니다.</p></div>
+   <div><h3 style="font-size:14px;margin-bottom:8px">전투 인력 등급 분포<span class="mute sm" style="font-weight:400"> 178명</span></h3><div class="bars">${grades.map(g=>`<div class="bar" style="grid-template-columns:36px 1fr 38px"><span class="gr ${g[0]}">${g[0]}</span><span class="t"><i style="width:${g[1]/64*100}%"></i></span><span class="n">${g[1]}</span></div>`).join('')}
+    <div class="bar" style="grid-template-columns:36px 1fr 38px"><span class="gr">${ic('lock',13)}</span><span class="t"><i class="hatch" style="width:2%"></i></span><span class="n">1</span></div></div>
+    <p class="fn">비공개 신청 인원 1명은 별도 표기합니다. 의무 등록 정보는 센터와 협회에 기록되어 있습니다.</p></div></div>
+  <p class="fn" style="margin-top:14px">인원 확대에 따라 직무별 선발 및 평가 체계를 지속적으로 정비하고 있습니다.</p></section>`}
+function secJobs(){return `<section class="sec" data-in="home jobs"><h2>현재 모집 중인 직무<small>${VJ.length}개 공고</small></h2><div class="jobs v2">${VJ.map(j=>`<article class="job" style="background:var(--bg2)"><button class="scrap" data-act="scrap" data-id="${j.id}" aria-pressed="${scraps.has(j.id)}" aria-label="${j.t} 스크랩">${ic('mark',17)}</button>
+  <h3 style="margin-top:0">${j.t}</h3><div class="job-meta" style="margin-top:2px"><span>${ic('pin',13)} ${j.r}</span><span>${j.e}</span><span style="${j.dl!=null&&j.dl<=10?'color:var(--warn)':''}">${j.dl==null?'상시 채용':'마감 D-'+j.dl}</span></div>
+  <div class="job-tags">${j.tg.map(t=>`<span class="badge ${t[1]}">${t[0]}</span>`).join('')}</div><p class="sub sm" style="margin-top:10px">${j.n}</p>
+  <div class="job-foot" style="margin-top:12px;padding-top:10px"><span></span><button class="btn sm ${j.guide?'gold':'pri'}" data-act="${j.guide?'guide':'apply'}" data-id="${j.id}">${j.guide?'가이드 전속 문의':'지원하기'}</button></div></article>`).join('')}</div>
+  <div style="text-align:center;margin-top:14px" data-hide="jobs"><a class="btn" href="#/guild/verglow/jobs">전체 채용 공고 보기</a></div>
+  <div class="x-only" data-in="jobs" style="margin-top:20px"><h3 style="font-size:14.5px;margin-bottom:10px">전형 절차</h3><div class="steps"><div class="step"><b>1</b><br>서류·자격 확인<small>안전 이수증, 등록 상태</small></div><div class="step"><b>2</b><br>직무 평가<small>실기 또는 사례 분석</small></div><div class="step"><b>3</b><br>인사 면접<small>인사팀 진행</small></div><div class="step"><b>4</b><br>수습 배치<small>3개월 · 배치 평가</small></div></div></div></section>`}
+function secWelfare(){return `<section class="sec" data-in="home welfare"><h2>복지 및 계약 투명성<small>인증 상태와 확인 날짜를 함께 공시합니다</small></h2><div class="wf">${WF.map(w=>`<div class="wfi"><span class="ok">${ic('check',18)}</span><div>${w[0]}<small>${w[1]}</small></div><div style="text-align:right"><span class="badge ${w[4]}">${w[2]}</span><small class="mute" style="display:block;font-size:11.5px;margin-top:3px">확인 ${w[3]}</small></div></div>`).join('')}</div>
+  <p class="fn">‘복무 거부 이력 불문’은 지원자의 권리를 존중한다는 뜻입니다. 직무 적합성과 법적 자격 심사는 별도로 이루어집니다.</p></section>`}
+function stars(n){return '★'.repeat(Math.floor(n))+(n%1?'⯨':'')}
+function secReviews(){const tags=['전체','분위기','교육','업무 강도','관리 체계','복지'];
+ return `<section class="sec" data-in="home reviews"><h2>구성원 후기<small>익명 · 후기 214건 기준</small></h2>
+ <div class="rate"><div class="big">4.3<small>/ 5.0</small></div><div>${[['성장 가능성',4.8],['보상·정산',4.6],['업무 강도',3.4],['관리 체계',3.9],['경영진',4.7]].map(r=>`<div class="rr"><span>${r[0]}</span><span class="t"><i style="width:${r[1]/5*100}%"></i></span><b>${r[1]}</b></div>`).join('')}</div></div>
+ <div class="rvf" role="group" aria-label="후기 태그 필터">${tags.map((t,i)=>`<button class="chip" data-act="rtag" data-k="${t}" aria-pressed="${i===0}">${t}</button>`).join('')}</div><div id="rvl"></div></section>`}
+function drawReviews(tag='전체'){const el=$('#rvl');if(!el)return;const list=REV.filter(r=>tag==='전체'||r.g.includes(tag));
+ el.innerHTML=list.length?list.map((r,i)=>`<div class="rv"><div class="rv-h"><span class="stars" aria-label="${r.s}점">${'★'.repeat(Math.round(r.s))}</span><b style="color:var(--text)">${r.s.toFixed(1)}</b><span>익명</span><span class="badge">${r.st}</span><span>${r.j} · ${r.y}</span></div><p>${r.t}</p><div class="rv-f"><div class="tg">${r.g.map(g=>`<span class="badge">${g}</span>`).join('')}</div><button class="help" data-act="help" data-n="${r.h}" aria-pressed="false">도움돼요 ${r.h}</button></div></div>`).join(''):'<div class="empty">이 태그의 후기가 아직 없습니다.</div>'}
+function secRumor(){return `<section class="sec" data-in="home rumor"><h2>업계 소문<small>커뮤니티 발췌 · 사실로 확정되지 않음</small></h2><div class="rmbox">${RUM.map(r=>`<div class="rm"><q>“${r[0]}”</q><div class="st"><span class="badge warn">${r[1].split(' · ')[0]}</span>${r[1].split(' · ').slice(1).map(s=>`<span class="badge">${s}</span>`).join('')}</div></div>`).join('')}</div>
+ <p class="fn">소문은 공식 자료가 아닙니다. 확인되지 않은 정보로 지원 여부를 판단하지 마시고 공시 탭의 수치와 함께 보세요.</p></section>`}
+function newsW(){return `<section class="w"><h3>최근 업계 동향</h3><ul style="gap:9px">
+ <li class="sm">아르카나 웍스, 종합 순위 6계단 상승</li><li class="sm">한빛 사냥단 메이저 길드 인증 심사 착수</li><li class="sm">서해권 고위험 게이트 공략 인력 모집 진행 중</li><li class="sm">헌터 등급 시험 2155 1차 접수 시작</li></ul></section>`}
+function alertW(){return `<section class="w" style="border-color:rgba(234,214,166,.3)"><h3>베르글로 알림<small>팔로우 중</small></h3><ul style="gap:9px">
+ <li class="wi" style="grid-template-columns:auto 1fr"><span class="badge mint">신규</span><span class="sm">채용 공고 5건 게시 중</span></li>
+ <li class="wi" style="grid-template-columns:auto 1fr"><span class="badge mint">모집</span><span class="sm">공략분석관 추가 모집</span></li>
+ <li class="wi" style="grid-template-columns:auto 1fr"><span class="badge">공시</span><span class="sm">조직 확장 관련 공시 업데이트(03.01)</span></li></ul></section>`}
+
+function renderGuild(tab){
+  $('#app').innerHTML=`<div class="wrap">
+  <nav class="crumb" aria-label="경로"><a href="#/">채용 홈</a><span>›</span><a href="#/guilds">길드 랭킹</a><span>›</span><span>국내 종합</span><span>›</span><span class="cur">01 베르글로</span></nav>
+  <div class="rtabs" role="tablist" aria-label="랭킹 구분">${Object.entries(RANK).map(([k,v])=>`<button role="tab" data-act="rank" data-k="${k}" aria-selected="${k===rkKey}">${v.n}</button>`).join('')}</div>
+  <div class="rstrip" id="rs"></div>
+  <section class="brand" aria-label="베르글로 길드 소개">
+    <div class="brand-l">
+      <span class="rankbadge"><b>01위</b>국내 종합 랭킹</span>
+      <div class="mark">${logoMark(76)}<div><div class="wm" aria-label="VERGLOW">VERGLOW</div><div class="wm-ko">베르글로</div></div></div>
+      <div class="bchips"><span class="badge gold">${ic('shield',13)} 헌터협회 인증 메이저 길드</span><span class="badge">설립 5년 차</span><span class="badge">최근 18개월간 국내 종합 1위 유지</span></div>
+      <p class="slogan">성과로 증명하고, 체계로 확장한다.</p>
+      <p class="bdesc">고난도 게이트 공략을 기반으로 빠르게 성장한 신흥 강호. 전투 인력과 전문 지원 조직을 함께 확장하고 있습니다.</p>
+      <div class="bmeta"><span>길드 팔로워 <b>184,200</b>명</span><span>플랫폼 평점 <b>4.3</b> / 5.0</span><span class="mute sm">공시 기준일 2155.03.01</span></div>
+      <div class="bact"><button class="btn gold" data-act="apply" data-id="vg-hunter">지원하기</button><button class="btn" data-act="guide" data-id="vg-guide">가이드 전속 문의</button><button class="btn" data-act="follow" id="fl">팔로우</button></div>
+    </div>
+    <aside class="brand-r" aria-label="길드장 프로필">
+      <div class="lead"><div class="ph">${portrait()}</div><div><span class="badge gold">길드장</span><h3>백시헌</h3>
+       <dl><dt>능력</dt><dd>빛과 잔상</dd><dt>헌터 등급</dt><dd>비공개</dd><dt>신체</dt><dd>190cm · 20대 후반</dd><dt>이력</dt><dd>센터 복무 이수<br>히어로협회 시험 합격(공개 동의)</dd></dl></div></div>
+      <p class="quote">“일 잘하는 사람한테는 제가 꽤 다정합니다.”</p>
+      <div class="deputy"><i>유</i><span>부길드장 유정한<br><span class="mute">실무·공략 지휘 보좌</span></span></div>
+    </aside>
+  </section>
+  <div class="gtabs" role="tablist" aria-label="길드 상세">${TABS.map(t=>`<button role="tab" data-act="gtab" data-k="${t[0]}" aria-selected="${t[0]===tab}">${t[1]}</button>`).join('')}</div>
+  <div class="layout" data-tab="${tab}"><div class="col" id="gcol">${secStats()}${secRank()}${secRisk()}${secOpsTbl()}${secOrg()}${secJobs()}${secWelfare()}${secReviews()}${secRumor()}</div>
+   <aside class="side">${slotsW()}${newsW()}${alertW()}</aside></div></div>`;
+  $$('#gcol>[data-in]').forEach(s=>{s.hidden=!s.dataset.in.split(' ').includes(tab)});
+  $$('[data-hide]').forEach(e=>{e.hidden=e.dataset.hide===tab});
+  $$('.x-only').forEach(e=>{if(e.dataset.in.split(' ').includes(tab)&&tab!=='home')e.hidden=false;else e.hidden=true});
+  drawRank();drawReviews();syncScrap();
+}
+function drawRank(){const R=RANK[rkKey];$('#rs').innerHTML=R.r.map((r,i)=>{const id=Object.keys(G).find(k=>G[k].ko===r[0]);const t=id?`a href="#/guild/${id}"`:'div';return `<${t} class="rc${r[0]==='베르글로'?' me2':''}"><b>${i+1}</b><span>${r[0]}</span><em>${R.u} ${r[1]}${r[2]?' · '+r[2]:''}</em></${id?'a':'div'}>`}).join('');
+  const old=$('#rnote');if(old)old.remove();if(rkKey==='rise')$('#rs').insertAdjacentHTML('afterend','<p class="rnote" id="rnote">베르글로는 이미 1위를 유지 중이라 상승 순위에는 해당하지 않습니다.</p>')}
+
+
+/* ---------- 길드 데이터 (목록·상세 공용) ---------- */
+const G={
+ verglow:{en:'VERGLOW',ko:'베르글로',scale:'메이저',list:1,m:{idx:98.4,talent:91,rise:0},ops:86,surv:99.2,members:312,start:88,hi:20,growth:28,since:5,leader:['백시헌','길드장'],tag:'성과로 증명하고, 체계로 확장한다.',desc:'고난도 게이트 공략을 기반으로 급성장한 국내 종합 1위 길드',guide:12,edu:'신규 인력 교육 과정',checkup:1,bind:0,pre:1,rv:[4.5,'전투부 3년차','길드장님 소문과 달리 일정 관리는 칼같습니다.']},
+ orbis:{en:'ORBIS',ko:'오르비스',scale:'대형',list:1,m:{idx:94.1,talent:96,rise:0},ops:79,surv:99.5,members:540,start:81,hi:18,growth:6,since:22,leader:['서가온','길드장'],tag:'교육과 생존율로 신뢰를 쌓는 전통 대형 길드',desc:'신입 교육팀을 운영하고 생존율 1위를 지키는 오래된 대형 길드',guide:14,edu:'신입 교육팀 3개월',checkup:1,bind:0,pre:1,rv:[4.5,'전투부 4년차','교육이 체계적이라 신입이 덜 죽습니다. 대신 승진은 느려요.']},
+ daesung:{en:'DAESUNG HOUND',ko:'대성 하운드',scale:'대형',list:1,m:{idx:91.7,talent:93,rise:1},ops:74,surv:98.7,members:465,start:77,hi:15,growth:9,since:15,leader:['권태성','길드장'],tag:'정산·법무·장비까지 갖춘 종합 길드',desc:'비전투 직군이 넓어 능력자와 일반인이 함께 일하는 대형 길드',guide:10,edu:'직무별 사수 + 입문 교육',checkup:1,bind:0,pre:1,rv:[4,'정산팀 2년차','일반인 직원도 존중받는 분위기입니다. 마감 시즌은 야근이 잦아요.']},
+ arcana:{en:'ARCANA WORKS',ko:'아르카나 웍스',scale:'중형',list:1,m:{idx:88.2,talent:88,rise:6},ops:61,surv:98.1,members:210,start:64,hi:9,growth:31,since:7,leader:['문하린','길드장'],tag:'가이드 보호 심사 완료를 앞세운 상승세 길드',desc:'가이드 계약 투명성으로 최근 6개월간 가장 크게 순위가 오른 중형 길드',guide:18,edu:'사수 + 월간 교육',checkup:1,bind:0,pre:1,rv:[4.5,'가이드팀 1년차','동의서 절차와 치료량 상한이 실제로 지켜집니다.']},
+ bukdu:{en:'BUKDU',ko:'북두',scale:'중형',list:1,m:{idx:86.9,talent:82,rise:3},ops:55,surv:98.9,members:260,start:57,hi:8,growth:12,since:11,leader:['강무진','길드장'],tag:'마석 감정·가공 사업을 함께 운영',desc:'마석사업부를 둔 중형 길드. 감정사와 가공 인력 비중이 높음',guide:6,edu:'사수 + 자격 취득 지원',checkup:1,bind:0,pre:0,rv:[3.5,'마석사업부 2년차','차폐 용기와 산재 보험은 확실합니다. 가공 라인은 피로도가 높아요.']},
+ hanbit:{en:'HANBIT',ko:'한빛 사냥단',scale:'중형',list:1,m:{idx:84.5,talent:79,rise:3},ops:49,surv:97.8,members:188,start:52,hi:6,growth:18,since:6,leader:['오세련','길드장'],tag:'메이저 인증 심사를 받고 있는 성장 길드',desc:'최근 인증 심사에 착수한 중형 길드',guide:4,edu:'사수 1:2 교육',checkup:1,bind:0,pre:0,rv:[4,'전투부 1년차','분위기는 좋은데 가이드가 부족해서 출동 간격이 길어요.']},
+ kairos:{en:'KAIROS',ko:'카이로스',scale:'중형',list:1,m:{idx:82,talent:77,rise:2},ops:44,surv:97.2,members:150,start:47,hi:5,growth:10,since:9,leader:['윤시우','길드장'],tag:'소수 정예 공략 중심',desc:'정찰 능력자 비중이 높은 중형 길드',guide:3,edu:'사수 교육',checkup:0,bind:0,pre:0,rv:[3.5,'감응형 2년차','정찰 대우는 좋지만 검진 지원은 아직 없어요.']},
+ haneul:{en:'HANEUL SAEGIM',ko:'하늘새김',scale:'중형',list:1,m:{idx:80.3,talent:74,rise:2},ops:41,surv:96.9,members:132,start:44,hi:4,growth:7,since:8,leader:['도연서','길드장'],tag:'소형 게이트 안정 운영',desc:'저·중위험 게이트 중심으로 꾸준히 실적을 쌓는 중형 길드',guide:3,edu:'입문 교육 2주',checkup:1,bind:0,pre:0,rv:[4,'전투부 2년차','무리하지 않는 공략 방침이라 안심됩니다.']},
+ noeul:{en:'NOEUL',ko:'노을수렵단',scale:'소형',ops:12,start:14,surv:91.2,members:18,hi:0,growth:0,since:3,leader:['박노을','단장'],tag:'소수 인원 현장 중심',desc:'소형 게이트 위주로 움직이는 소규모 길드',guide:0,edu:'팀장 1명이 현장에서 지도',checkup:0,bind:0,pre:0,warn:'최근 1년 생존율이 업계 평균보다 낮게 공시되어 있습니다. 교육과 가이드 지원 여부를 지원 전에 확인하세요.',rv:[3,'전투원 1년차','현장 경험은 쌓이는데 교육 체계는 없어요.']},
+ cheongsol:{en:'CHEONGSOL',ko:'청솔 파티',scale:'소형',ops:9,start:12,surv:90.4,members:14,hi:0,growth:0,since:2,leader:['정청솔','대표'],tag:'복무 대신 과태료 대납 계약 운영',desc:'과태료 대납과 장기 계약을 조건으로 인원을 모집하는 소규모 파티',guide:0,edu:'없음',checkup:0,bind:1,pre:0,red:'협회 모니터링 중입니다. 대납 금액 환수 조건과 5년 계약 구속, 중도 해지 위약금이 확인됩니다. 계약서는 지원 후에만 열람할 수 있습니다.',rv:[2,'전직 전투원','대납 금액을 갚느라 이직이 막혔어요. 계약서를 나중에 줍니다.']},
+ center:{en:'CENTER',ko:'센터 게이트전담부서',scale:'공공',ops:212,start:218,surv:98.6,members:96,hi:41,growth:4,since:79,leader:['게이트전담부서장','부서장'],tag:'즉응 대기 헌터를 운용하는 공공 부서',desc:'게이트 탐지·판정과 붕괴 대응을 맡는 센터 부서. 소속 헌터의 마석 수익은 센터로 귀속됩니다.',guide:20,edu:'센터 복무 연계 교육',checkup:1,bind:0,pre:1,rv:[4,'즉응 대기 3년차','장비와 가이드는 우선 배정되지만 수익은 없어요. 기피 게이트가 많습니다.']}
+};
+function GL(k){return Object.entries(G).filter(([i,g])=>g.list).sort((a,b)=>{const va=k==='idx'||k==='talent'||k==='rise'?a[1].m[k]:a[1][k],vb=k==='idx'||k==='talent'||k==='rise'?b[1].m[k]:b[1][k];return vb-va||b[1].m.idx-a[1].m.idx})}
+const MFMT={idx:v=>'종합 지수 '+v.toFixed(1),ops:v=>v+'건',surv:v=>v+'%',talent:v=>v+'점',rise:v=>v?'▲'+v:'유지'};
+const MLAB={idx:'종합 지수',ops:'1년 완료',surv:'생존율',talent:'선호도',rise:'6개월 변동'};
+function mv(g,k){return k==='idx'||k==='talent'||k==='rise'?g.m[k]:g[k]}
+function listRows(){const K=rkKey==='overall'?'idx':rkKey;return GL(K).map(([id,g],i)=>{const n=J.filter(j=>j.g===id).length;
+ return `<a class="grow${id==='verglow'?' me2':''}" href="#/guild/${id}"><span class="no">${i+1}</span><span class="gmark${id==='verglow'?' gold':''}" aria-hidden="true">${g.en[0]}</span>
+ <div><h3>${g.en} <span class="sub" style="font-weight:600">${g.ko}</span><span class="badge ${id==='verglow'?'gold':''}">${g.scale}</span>${id==='verglow'?'<span class="badge mint">18개월 연속 1위</span>':''}</h3><p>${g.desc}</p></div>
+ <div class="gm"><span class="hl">${MLAB[K]}<b>${mv(g,K)===0&&K==='rise'?'유지':MFMT[K](mv(g,K)).replace('종합 지수 ','')}</b></span><span>인원<b>${g.members}명</b></span><span>생존율<b>${g.surv}%</b></span><span>공고<b>${n}건</b></span></div>
+ <span class="btn sm${id==='verglow'?' gold':''}">상세 보기</span></a>`}).join('')}
+function renderGuildList(){
+  $('#app').innerHTML=`<div class="wrap"><nav class="crumb" aria-label="경로"><a href="#/">채용 홈</a><span>›</span><span class="cur">메이저 길드</span></nav>
+  <div class="layout"><div class="col"><div><h1 style="font-size:26px;font-weight:800">메이저 길드 랭킹</h1><p class="sub" style="margin-top:6px">헌터협회 인증 길드의 공시 자료를 기준으로 순위를 매깁니다. 길드를 선택하면 공시·채용·후기를 볼 수 있습니다.</p></div>
+  <div class="rtabs" role="tablist" aria-label="랭킹 구분" style="margin:0">${Object.entries(RANK).map(([k,v])=>`<button role="tab" data-act="lrank" data-k="${k}" aria-selected="${k===rkKey}">${v.n}</button>`).join('')}</div>
+  <div class="glist" id="gl">${listRows()}</div>
+  <p class="fn">소속 인원, 등급 분포, 실적, 자본금 기준을 충족한 길드가 정식 기업으로 승인됩니다. 순위 산정 기준과 공시 기준일(2155.03.01)은 길드별 상세 화면에서 확인할 수 있습니다.</p></div>
+  <aside class="side">${slotsW()}${newsW()}</aside></div></div>`;
+}
+function renderGeneric(id){
+  const g=G[id],jobs=J.filter(j=>j.g===id),succ=(g.ops/g.start*100).toFixed(1);
+  const rank=g.list?GL('idx').findIndex(x=>x[0]===id)+1:0;
+  const st=[[g.ops,'건','최근 1년 게이트 공략 완료',`착수 ${g.start}건 중 완료 ${g.ops}건, 철수·실패 ${g.start-g.ops}건`,'최종 정산이 완료된 작전 기준입니다.'],
+   [succ,'%','공략 성공률',`완료 ${g.ops}건 ÷ 착수 ${g.start}건`,'작전 단위 지표입니다. 인력 생존율과 별개입니다.'],
+   [g.surv,'%','출동 인력 생존율',g.surv<95?'업계 평균보다 낮음':'출동 인력 기준','출동한 사람 기준 지표입니다. 성공률과 별개입니다.'],
+   [g.hi,'건','고위험 게이트 공략',g.hi?'센터 판정 기준':'공시 대상 없음','위험도 판정은 센터 등급과 협회 기준을 따릅니다.'],
+   [g.members,'명',g.scale==='공공'?'즉응 대기 헌터':'소속 인원',g.guide?`가이드 ${g.guide}명 포함`:'가이드팀 없음','가이드 인원은 보호 등록 기준으로 집계합니다.'],
+   [g.growth?'+'+g.growth:g.growth,'%','최근 1년 인원 증가율','전년 대비','전투 인력과 비전투 인력의 합산 증가율입니다.']];
+  const wf=[[g.guide?`가이드팀 상주 (${g.guide}명)`:'가이드팀 없음',g.guide?'ok':'none',g.guide?'접촉 수위 동의서 계약':'외부 가이드 연계 또는 미운영'],
+   ['신입 교육',g.edu==='없음'?'none':'ok',g.edu],['정기 침식 검진 지원',g.checkup?'ok':'none',g.checkup?'길드 검진 지원':'지원 없음(센터 연 1회 무상 검진만 해당)'],
+   ['위약금·과태료 대납 장기 구속 계약',g.bind?'warn':'ok',g.bind?'대납·계약 기간 묶기 관행 확인됨':'사용하지 않음'],['계약서 사전 열람',g.pre?'ok':'warn',g.pre?'지원 단계에서 열람 가능':'지원 후에만 열람 가능']];
+  const mk=g.scale==='메이저'?'':'';
+  $('#app').innerHTML=`<div class="wrap"><nav class="crumb" aria-label="경로"><a href="#/">채용 홈</a><span>›</span><a href="#/guilds">길드 랭킹</a><span>›</span><span class="cur">${g.ko}</span></nav>
+  <div class="layout"><div class="col">
+  ${g.red?`<div class="gwarn red">${ic('alert',18)}<span>${g.red}</span></div>`:''}${g.warn?`<div class="gwarn">${ic('alert',18)}<span>${g.warn}</span></div>`:''}
+  <section class="gb"><div><h1><span class="gmark">${g.en[0]}</span>${g.en}</h1><div class="ko">${g.ko}</div>
+   <div class="bchips" style="margin-top:16px">${rank?`<span class="badge mint">국내 종합 ${rank}위</span>`:'<span class="badge">랭킹 대상 아님</span>'}<span class="badge ${g.scale==='메이저'||g.scale==='대형'||g.scale==='공공'?'mint':''}">${g.scale==='공공'?'공공 부서':g.scale+' 길드'}</span><span class="badge">${g.scale==='공공'?'센터 소속':'설립 '+g.since+'년 차'}</span>${g.red?'<span class="badge warn">협회 모니터링 중</span>':''}</div>
+   <p class="slogan" style="font-size:17px">${g.tag}</p><p class="bdesc">${g.desc}</p>
+   <div class="bact">${jobs.length?(jobs[0].sus?`<button class="btn" data-act="report">계약 신고</button>`:`<button class="btn pri" data-act="${jobs[0].type==='guide'?'guide':'apply'}" data-id="${jobs[0].id}">${jobs[0].type==='guide'?'가이드 전속 문의':'지원하기'}</button>`):''}<button class="btn" data-act="follow">팔로우</button><a class="btn" href="#/guilds">랭킹으로 돌아가기</a></div></div>
+   <aside class="gb-r"><i>${g.leader[0][0]}</i><div><b style="font-size:18px">${g.leader[0]}</b><div class="sub">${g.leader[1]}</div></div><p class="mute sm">공시 기준일 2155.03.01</p></aside></section>
+  <section class="sec"><h2>핵심 공시<small>최근 1년</small></h2><div class="stats">${st.map((x,i)=>`<div class="stat"><button class="info" data-tip="${x[4]}" aria-label="${x[2]} 설명">${ic('info',15)}</button><div class="v" style="${i===2&&g.surv<95?'color:var(--warn)':''}">${x[0]}<small>${x[1]}</small></div><div class="l">${x[2]}</div><div class="n">${x[3]}</div></div>`).join('')}</div></section>
+  <section class="sec"><h2>현재 모집 중인 직무<small>${jobs.length}개 공고</small></h2>${jobs.length?`<div class="jobs">${jobs.map(j=>card(j,1)).join('')}</div>`:'<div class="empty">현재 모집 중인 공고가 없습니다.</div>'}</section>
+  <section class="sec"><h2>복지 및 계약 투명성</h2><div class="wf">${wf.map(w=>`<div class="wfi"><span class="${w[1]==='ok'?'ok':''}" style="${w[1]==='warn'?'color:var(--warn)':w[1]==='none'?'color:var(--mute)':''}">${ic(w[1]==='ok'?'check':w[1]==='warn'?'alert':'info',18)}</span><div>${w[0]}<small>${w[2]}</small></div><div></div></div>`).join('')}</div></section>
+  <section class="sec"><h2>구성원 후기<small>익명</small></h2><div class="rv"><div class="rv-h"><span class="stars">${'★'.repeat(Math.round(g.rv[0]))}</span><b style="color:var(--text)">${g.rv[0].toFixed(1)}</b><span>익명</span><span>${g.rv[1]}</span></div><p style="margin-bottom:0">${g.rv[2]}</p></div></section>
+  </div><aside class="side">${slotsW()}${newsW()}</aside></div></div>`;
+  syncScrap();
+}
+
+/* ---------- modal ---------- */
+function openModal(kind,id){
+  const isG=kind==='guide';const opts=[...J.filter(j=>j.type==='combat'||j.type==='noncombat'||j.type==='public'),...VJ.filter(v=>!v.guide).map(v=>({id:v.id,org:'VERGLOW 베르글로',title:v.t}))];
+  const seen=new Set();const O=opts.filter(o=>!seen.has(o.id)&&seen.add(o.id)&&!o.sus);
+  $('#mroot').innerHTML=`<div class="ov" data-act="close"><div class="md" role="dialog" aria-modal="true" aria-labelledby="mt" onclick="event.stopPropagation()">
+  <h3 id="mt">${isG?'가이드 전속 문의':'지원서 작성'}</h3><p class="sub sm" style="margin-top:6px">${isG?'접촉 수위 동의서와 계약 조건은 가이드보호부서 비공개 창구에서 확인한 뒤 진행합니다. 이 화면에서는 개인 정보와 접촉 관련 내용을 받지 않습니다.':'복무 거부 이력만으로 지원이 제한되지 않습니다. 직무 적합성과 법적 자격 심사는 별도로 진행합니다.'}</p>
+  <form id="mf" novalidate>${isG?`
+   <label class="f">문의 유형<select name="k"><option>전속 계약 조건(접촉 수위 포함)</option><option>일일 치료량 상한·휴식 기준</option><option>호위 배정·해지 조건</option><option>계약 감사 결과 열람</option></select></label>
+   <label class="f">회신 방식<select name="r"><option>비공개 창구 안내 메시지</option><option>가이드보호부서 상담 예약</option></select></label>
+   <label class="ck"><input type="checkbox" name="a"><span>이 문의는 지원이나 계약 체결이 아니며, 동의서 없이는 어떤 접촉도 진행되지 않음을 확인했습니다.</span></label>`:`
+   <label class="f">지원 직무<select name="j">${O.map(o=>`<option value="${o.id}" ${o.id===id?'selected':''}>${o.org.split(' ')[0]} · ${o.title}</option>`).join('')}</select></label>
+   <div class="row"><label class="f">복무 구분<select name="s"><option>복무 이수(전역)</option><option>복무 이수 예정(진로 면담 중)</option><option>자발 등록(B급 미만)</option><option>복무 거부(과태료 납부)</option><option>복무 거부(자격 박탈 선택)</option></select></label>
+   <label class="f">입소 차수<input name="n" type="number" min="1" max="160" value="150"></label></div>
+   <label class="ck"><input type="checkbox" name="c"><span>헌터협회 안전 이수증 보유(복무 이수자는 면제)</span></label>
+   <label class="ck"><input type="checkbox" name="a"><span>계약서 사전 열람 안내와 공시 상세를 확인했습니다.</span></label>`}
+   <div class="err" id="me" role="alert"></div>
+   <div class="acts"><button type="button" class="btn" data-act="close">취소</button><button type="submit" class="btn ${isG?'gold':'pri'}">${isG?'문의 접수':'지원서 제출'}</button></div></form></div></div>`;
+  const f=$('#mf');f.addEventListener('submit',e=>{e.preventDefault();const d=new FormData(f);
+   if(!d.get('a')){$('#me').textContent='확인 항목에 체크해 주세요.';return}
+   if(!isG){const n=+d.get('n');if(!(n>=1&&n<=160)){$('#me').textContent='입소 차수는 1~160 사이로 입력해 주세요.';return}
+     const rej=String(d.get('s')).startsWith('복무 거부');if(rej&&!d.get('c')){$('#me').textContent='복무 이수 경력이 없으면 안전 이수증이 필요합니다. 하루 교육으로 발급받을 수 있습니다.';return}}
+   closeModal();toast(isG?'문의가 접수되었습니다. 비공개 창구로 안내 메시지를 보내 드립니다.':'지원서가 접수되었습니다. 결과는 알림으로 안내합니다.')});
+  const first=$('#mf select,#mf input');first&&first.focus();
+}
+function closeModal(){$('#mroot').innerHTML=''}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+
+/* ---------- events ---------- */
+document.addEventListener('click',e=>{
+  const soon=e.target.closest('[data-soon]');if(soon){e.preventDefault();toast(`‘${soon.dataset.soon}’ 메뉴는 시안 단계에서 열려 있지 않습니다.`);return}
+  const go=e.target.closest('[data-go]');if(go&&go.dataset.go==='jobs'){if(location.hash.startsWith('#/guild')||true){e.preventDefault();if(location.hash!=='#/')location.hash='#/';setTimeout(()=>{const j=$('#jobs');j&&j.scrollIntoView({behavior:'smooth'})},60)}return}
+  const a=e.target.closest('[data-act]');if(!a)return;const k=a.dataset.act;
+  if(a.tagName==='A'&&k==='soon')e.preventDefault();
+  if(k==='close'){if(a.classList.contains('ov')&&e.target!==a)return;closeModal()}
+  else if(k==='soon')toast(`‘${a.dataset.m}’ 기능은 시안 단계에서 제공하지 않습니다.`);
+  else if(k==='scrap'){const id=a.dataset.id;scraps.has(id)?scraps.delete(id):scraps.add(id);syncScrap();toast(scraps.has(id)?'스크랩했습니다.':'스크랩을 해제했습니다.')}
+  else if(k==='scraps')toast(scraps.size?`스크랩한 공고 ${scraps.size}건`:'스크랩한 공고가 없습니다.');
+  else if(k==='more'){const m=$('#m-'+a.dataset.id);const o=m.classList.toggle('open');a.setAttribute('aria-expanded',o)}
+  else if(k==='apply')openModal('apply',a.dataset.id);
+  else if(k==='guide')openModal('guide',a.dataset.id);
+  else if(k==='report')toast('공고 신고 센터로 접수되었습니다. 협회 모니터링 대상에 등록됩니다.');
+  else if(k==='chip'){const f=a.dataset.k;state.flags.has(f)?state.flags.delete(f):state.flags.add(f);a.setAttribute('aria-pressed',state.flags.has(f));drawJobs()}
+  else if(k==='chipOnly'){state.flags=new Set([a.dataset.k]);$$('.chip').forEach(c=>c.setAttribute('aria-pressed',state.flags.has(c.dataset.k)));drawJobs();$('#jobs').scrollIntoView({behavior:'smooth'})}
+  else if(k==='search'){drawJobs();$('#jobs').scrollIntoView({behavior:'smooth'})}
+  else if(k==='reset'){state.q='';state.series='';state.scale='';state.flags=new Set();$('#q').value='';$('#fs').value='';$('#fc').value='';$$('.chip').forEach(c=>c.setAttribute('aria-pressed','false'));drawJobs()}
+  else if(k==='lrank'){rkKey=a.dataset.k;$$('.rtabs button').forEach(b=>b.setAttribute('aria-selected',b===a));$('#gl').innerHTML=listRows()}
+  else if(k==='rank'){rkKey=a.dataset.k;$$('.rtabs button').forEach(b=>b.setAttribute('aria-selected',b===a));drawRank()}
+  else if(k==='gtab'){location.hash=a.dataset.k==='home'?'#/guild/verglow':'#/guild/verglow/'+a.dataset.k;}
+  else if(k==='rtag'){$$('.rvf .chip').forEach(c=>c.setAttribute('aria-pressed',c===a));drawReviews(a.dataset.k)}
+  else if(k==='help'){const on=a.getAttribute('aria-pressed')!=='true';a.setAttribute('aria-pressed',on);a.textContent='도움돼요 '+(+a.dataset.n+(on?1:0))}
+  else if(k==='follow'){const on=a.dataset.on!=='1';a.dataset.on=on?1:0;a.textContent=on?'팔로우 중':'팔로우';toast(on?'베르글로 소식을 알림으로 받습니다.':'팔로우를 해제했습니다.')}
+});
+document.addEventListener('input',e=>{
+  if(e.target.id==='q'){state.q=e.target.value;drawJobs()}
+  if(e.target.id==='fs'){state.series=e.target.value;drawJobs()}
+  if(e.target.id==='fc'){state.scale=e.target.value;drawJobs()}
+  if(e.target.id==='nn'){state.N=+e.target.value;drawMatcher()}
+});
+document.addEventListener('change',e=>{if(e.target.id==='so'){state.sort=e.target.value;drawJobs()}});
+
+/* ---------- router ---------- */
+let page='';
+function setNav(k){$$('.nav a').forEach(a=>a.classList.toggle('on',a.dataset.nav===k))}
+function route(){
+  const p=location.hash.replace(/^#\/?/,'').split('/');let next;
+  if(p[0]==='guilds'){renderGuildList();setNav('major');next='guilds'}
+  else if(p[0]==='guild'){const id=p[1]||'verglow';
+    if(id==='verglow'){const t=TABS.some(x=>x[0]===p[2])?p[2]:'home';renderGuild(t)}
+    else if(G[id])renderGeneric(id);
+    else{location.hash='#/guilds';return}
+    setNav('major');next='guild:'+id}
+  else{renderHome();setNav('home');next='home'}
+  if(next!==page)window.scrollTo(0,0);else if(next==='guild:verglow'){const g=$('.gtabs');g&&window.scrollY>g.offsetTop&&window.scrollTo({top:g.offsetTop-70})}
+  page=next;document.title=next.startsWith('guild:')?G[next.slice(6)].en+' · GATEWORK':next==='guilds'?'메이저 길드 랭킹 · GATEWORK':'GATEWORK · 헌터 채용 플랫폼';
+}
+window.addEventListener('hashchange',route);
+drawTicker();drawFooter();route();
+</script>
+</body>
+</html>
